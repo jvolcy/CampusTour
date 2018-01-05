@@ -16,6 +16,8 @@
 		0633BE1D1FFBC8760082C732 /* CampusTourTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE1C1FFBC8760082C732 /* CampusTourTests.swift */; };
 		0633BE281FFBC8760082C732 /* CampusTourUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE271FFBC8760082C732 /* CampusTourUITests.swift */; };
 		0633BE361FFBD02B0082C732 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE351FFBD02B0082C732 /* AboutViewController.swift */; };
+		068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */; };
+		068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		0633BE271FFBC8760082C732 /* CampusTourUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampusTourUITests.swift; sourceTree = "<group>"; };
 		0633BE291FFBC8760082C732 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0633BE351FFBD02B0082C732 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPoiManager.swift; sourceTree = "<group>"; };
+		068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCTLocationServices.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,8 @@
 			isa = PBXGroup;
 			children = (
 				0633BE051FFBC8760082C732 /* AppDelegate.swift */,
+				068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */,
+				068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */,
 				0633BE071FFBC8760082C732 /* HomeViewController.swift */,
 				0633BE091FFBC8760082C732 /* TourViewController.swift */,
 				0633BE351FFBD02B0082C732 /* AboutViewController.swift */,
@@ -265,6 +271,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */,
+				068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */,
 				0633BE0A1FFBC8760082C732 /* TourViewController.swift in Sources */,
 				0633BE061FFBC8760082C732 /* AppDelegate.swift in Sources */,
 				0633BE361FFBD02B0082C732 /* AboutViewController.swift in Sources */,
@@ -436,6 +444,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CampusTour/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.spelman.CampusTour;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -450,6 +459,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CampusTour/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.spelman.CampusTour;
 				PRODUCT_NAME = "$(TARGET_NAME)";
