@@ -18,6 +18,8 @@
 		0633BE361FFBD02B0082C732 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE351FFBD02B0082C732 /* AboutViewController.swift */; };
 		068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */; };
 		068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */; };
+		068E72ED1FFF208800BC3E29 /* CCampusTour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72EC1FFF208800BC3E29 /* CCampusTour.swift */; };
+		06C3956F1FFF3FB200651E5A /* CAVStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,8 @@
 		0633BE351FFBD02B0082C732 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPoiManager.swift; sourceTree = "<group>"; };
 		068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCTLocationServices.swift; sourceTree = "<group>"; };
+		068E72EC1FFF208800BC3E29 /* CCampusTour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCampusTour.swift; sourceTree = "<group>"; };
+		06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAVStreamer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,8 @@
 			children = (
 				0633BE051FFBC8760082C732 /* AppDelegate.swift */,
 				068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */,
+				06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */,
+				068E72EC1FFF208800BC3E29 /* CCampusTour.swift */,
 				068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */,
 				0633BE071FFBC8760082C732 /* HomeViewController.swift */,
 				0633BE091FFBC8760082C732 /* TourViewController.swift */,
@@ -272,11 +278,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */,
+				06C3956F1FFF3FB200651E5A /* CAVStreamer.swift in Sources */,
 				068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */,
 				0633BE0A1FFBC8760082C732 /* TourViewController.swift in Sources */,
 				0633BE061FFBC8760082C732 /* AppDelegate.swift in Sources */,
 				0633BE361FFBD02B0082C732 /* AboutViewController.swift in Sources */,
 				0633BE081FFBC8760082C732 /* HomeViewController.swift in Sources */,
+				068E72ED1FFF208800BC3E29 /* CCampusTour.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

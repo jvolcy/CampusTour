@@ -24,6 +24,7 @@ class HomeViewController: UIViewController {
     }
 
     @IBAction func btnStartTouchUpInside(_ sender: Any) {
+        //campusTour!.func3()
     }
     
 }

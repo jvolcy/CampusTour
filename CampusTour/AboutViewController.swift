@@ -14,6 +14,7 @@ class AboutViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         print("AboutViewController viewDidLoad")
+        campusTour!.subscribeForNewCoordNotification(f:self.callback)
     }
     
     override func didReceiveMemoryWarning() {
@@ -21,6 +22,11 @@ class AboutViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    func callback(coord:gps_coord)->(){
+        print("AboutView callback: \(coord.toString())")
+    }
+
     
 }
 
