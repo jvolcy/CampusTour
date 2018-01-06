@@ -25,10 +25,13 @@ class CCampusTour : NSObject, CLLocationManagerDelegate {
     var newCoordSubscribers : [(gps_coord)->()] = [(gps_coord)->()]()
     
     var ctLocationServices : CCTLocationServices!
+    var poiManager : CPoiManager!
 
     override init(){
         super.init()
-        ctLocationServices = CCTLocationServices(updateIntervalSec:2.0, delegate: self)
+        
+        //ctLocationServices = CCTLocationServices(updateIntervalSec:2.0, delegate: self)
+        poiManager = CPoiManager()
     }
     
     /* =========================================================================
@@ -65,11 +68,11 @@ class CCampusTour : NSObject, CLLocationManagerDelegate {
         updateCount += 1 */
          */
         
-        print(latestCoord.toString())
+        //print("\(locations.count): \(latestCoord.toString())")
         
         //call all subscribers to new coordinates
-        for f in newCoordSubscribers{
-            f(latestCoord)
+        for subscriberCallback in newCoordSubscribers{
+            subscriberCallback(latestCoord)
         }
     }
 
