@@ -8,35 +8,6 @@
 
 import UIKit
 
-/* =========================================================================
- define a point of interest structure.  This contains all the data about
- an individual POI.
- ======================================================================== */
-struct poi
-{
-    var poiID:String!
-    var title:String!
-    var desc:String!
-    var coord:gps_coord!
-    //var coord:(latitude:Double, longitude:Double)!
-    //var latitude:Double!
-    //var longitude:Double!
-    var radiusFt:Double!
-    var url:String!
-    
-    //default initializer does nothing
-    init(){}
-    
-    //initializer
-    init(poiID:String, title:String, desc:String, coord:gps_coord, radiusFt:Double, url:String) {
-        self.poiID = poiID
-        self.title = title
-        self.desc = desc
-        self.coord = coord
-        self.radiusFt = radiusFt
-        self.url = url
-    }
-}
 
 /* =========================================================================
  ======================================================================== */
@@ -60,7 +31,7 @@ class CPoiManager {
     
     // The POIs array is an array of poi structures.  Each structure contains all the data outlined above for each POI
     //(POI_ID, TITLE, DESC, LATITUDE, LONGITUDE, RADIUS_FT, URL)
-    var POIs = [poi]()
+    var POIs = [CPoi]()
     //var POIs = [(POI_ID:String, TITLE:String, DESC:String, LATITUDE:Double, LONGITUDE:Double, RADIUS_FT:Double, URL:String)]()
 
     
@@ -123,62 +94,107 @@ class CPoiManager {
                         //extract the data from the record
                         let poiID = String(poiRecordFields[0])
                         let title = String(poiRecordFields[1])
-                        var desc = String(poiRecordFields[2])
                         //set latitude, logitude and radiusFT to 0 if they are nil
-                        let latitude = Double(poiRecordFields[3]) ?? 0.0
-                        let longitude = Double(poiRecordFields[4]) ?? 0.0
-                        let radiusFt = Double(poiRecordFields[5]) ?? 0.0
-                        let url = String(poiRecordFields[6])
-                        
-                        //replace <br> and <BR> with "\n" in the POI description
-                        desc = desc.replacingOccurrences(of: "<br>", with: "\n")
-                        desc = desc.replacingOccurrences(of: "<BR>", with: "\n")
+                        let latitude = Double(poiRecordFields[2]) ?? 0.0
+                        let longitude = Double(poiRecordFields[3]) ?? 0.0
+                        let radiusFt = Double(poiRecordFields[4]) ?? 0.0
+                        let rtf_url = String(poiRecordFields[5])
+                        let img_url = String(poiRecordFields[6])
+                        let audio_url = String(poiRecordFields[7])
+                        let video_url = String(poiRecordFields[8])
                         
                         //build the poi object
-                        var new_poi:poi = poi()
+                        let new_poi = CPoi()
                         new_poi.poiID = poiID
                         new_poi.title = title
-                        new_poi.desc = desc
                         new_poi.coord = gps_coord(latitude:latitude, longitude:longitude)
-                        //new_poi.coord = (latitude:latitude, longitude:longitude)
-                        //new_poi.latitude = latitude
-                        //new_poi.longitude = longitude
                         new_poi.radiusFt = radiusFt
-                        new_poi.url = url
-                        
-                        /*
-                        //build the poi tuple
-                        let poi = (POI_ID:poiID, TITLE:title, DESC:desc, LATITUDE:latitude, LONGITUDE:longitude, RADIUS_FT:radiusFt, URL:url)
-                        */
+                        new_poi.rtf_url = rtf_url
+                        new_poi.img_url = img_url
+                        new_poi.audio_url = audio_url
+                        new_poi.video_url = video_url
                         
                         POIs.append(new_poi)    //add the poi to the POIs array
-                        }   //if poiRecordFields[0][poiRecordFields[0].startIndex] != "#"
+                    }   //if poiRecordFields[0][poiRecordFields[0].startIndex] != "#"
                     
-                    print(POIs)
                 }   //for poiRecord in poiRecords
             }   //do
             catch {
                 // contents could not be loaded
-                print("could not read contents of scct_poi.tsv")
+                print("could not read contents of \(CT_POI_FILE)")
             }
         }   // if let url = URL(string:
         else {
             // the URL was bad!
-            print("bad URL for scct_poi.tsv")
+            print("bad URL for \(CT_POI_FILE)")
         }
+        
+        /*for poi in POIs {
+            print(poi.toString(), "\n")
+        }
+        */
     }   //init()
     
     
     /* =========================================================================
      This function returns the closest POI that is in range of the supplied coordinates
      ======================================================================== */
-    func getNearestPoiInRange(coord:gps_coord) -> poi?
-    {
+    func getNearestPoiInRange(coord:gps_coord) -> CPoi? {
+        //find all POIs in range
+        let poisInRange = getPoisInRange(coord: coord)
+        
+        if poisInRange.count > 0 {
+            //Use minPoi and minDist as search indexes for finding the minimum distance
+            //Initialize these appropriately for the search
+            var minPoi = poisInRange[0] //assume the first POI is the closest
+            var minDist = poisInRange[0].radiusFt!   //start with a value guaranteed to be >= the min distance
+            
+            //go through the list of POIs in range and find the minimum
+            for poi in poisInRange {
+                //calculate the distance to the poi in the list
+                let dist = poi.distanceFrom(gpsCoord: coord)!
+                if dist < minDist { //new min found
+                    minDist = dist
+                    minPoi = poi
+                }   //if dist
+            }   //for poi in poisInRange
+            return minPoi
+        }   //if poisInRange.count > 0
+
         return nil
     }
-    
 
-    
+    /* =========================================================================
+     Get a list of all POIs in range of the specified coordinates
+     ======================================================================== */
+    func getPoisInRange(coord:gps_coord) -> [CPoi] {
+        var poisInRange = [CPoi]()
+        
+        //traverse the list of POIs and find those in range
+        for poi in POIs {
+            if poi.isInRange(gpsCoord: coord) == true {
+                poisInRange.append(poi)
+            }   // if poi.isInRange...
+        }   //for poi in POIs
+        return poisInRange
+    }   //func
+
+
+    /* =========================================================================
+     Find a POI with a POI_ID that matchews the provided string
+     ======================================================================== */
+    func getPoi(byID:String) -> CPoi? {
+        /* search the pois in the POIs list and return the first one with
+        an ID that matches byID. */
+        for poi in POIs {
+            if poi.poiID == byID {
+                return poi
+            }
+        }
+        //none was found; return nil
+        return nil
+    }
+
 }   //CPoiManager clasas
 
 

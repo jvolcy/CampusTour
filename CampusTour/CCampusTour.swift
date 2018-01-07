@@ -32,6 +32,18 @@ class CCampusTour : NSObject, CLLocationManagerDelegate {
         
         //ctLocationServices = CCTLocationServices(updateIntervalSec:2.0, delegate: self)
         poiManager = CPoiManager()
+        
+        //print("\n" + (poiManager.getPoi(byID: "LAURA_SPELMAN")!).toString() + "\n")
+        //let test_coord = gps_coord(latitude: 33.745135,longitude: -84.412361) //near Mcalpin
+        let test_coord = gps_coord(latitude: 33.745193,longitude: -84.409265)   //tapley & SS
+
+        let poisInRange = poiManager.getPoisInRange(coord: test_coord)
+        print("#poisInRange = \(poisInRange.count)")
+        for poi in poisInRange {
+            print("\(poi.poiID!) distance=\(poi.distanceFrom(gpsCoord: test_coord)!) feet.")
+        }
+        
+        print("distance to ACC = \(poiManager.getPoi(byID: "ACC")?.distanceFrom(gpsCoord: test_coord))")
     }
     
     /* =========================================================================
