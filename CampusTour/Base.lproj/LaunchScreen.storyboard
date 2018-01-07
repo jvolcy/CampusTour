@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Giles-Hall-on-the-Spelman-College-Campus" translatesAutoresizingMaskIntoConstraints="NO" id="uUX-to-gTX" userLabel="imgSplashBackground">
+                            <imageView userInteractionEnabled="NO" alpha="0.55000000000000004" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash" translatesAutoresizingMaskIntoConstraints="NO" id="uUX-to-gTX" userLabel="imgSplashBackground">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-horizontal-white-png" translatesAutoresizingMaskIntoConstraints="NO" id="H7B-Y9-JuC" userLabel="imgSplashLogo">
@@ -28,7 +29,6 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="uUX-to-gTX" secondAttribute="bottom" id="0dS-ED-vIi"/>
                             <constraint firstItem="uUX-to-gTX" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Bgd-W6-jYQ"/>
@@ -47,7 +47,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1600" height="1200"/>
         <image name="logo-horizontal-white-png" width="540" height="172"/>
+        <image name="splash" width="819" height="1158"/>
     </resources>
 </document>
