@@ -6,7 +6,7 @@
 //  Copyright © 2018 Jerry Volcy. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 
 /* =========================================================================

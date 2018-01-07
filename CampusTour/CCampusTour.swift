@@ -6,7 +6,7 @@
 //  Copyright © 2018 Jerry Volcy. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import CoreLocation
 
 /* =========================================================================
@@ -26,7 +26,7 @@ class CCampusTour : NSObject, CLLocationManagerDelegate {
     
     var ctLocationServices : CCTLocationServices!
     var poiManager : CPoiManager!
-
+    
     override init(){
         super.init()
         
