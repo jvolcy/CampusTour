@@ -29,6 +29,7 @@ class CAVStreamer {
         avPlayerController.videoGravity = "AVLayerVideoGravityResizeAspectFill"
     }
     
+    
     /* =========================================================================
      playMedia() is used to stream either audio or video media based on a
      supplied URL.  The only require parameter is the url.  This will result
@@ -54,7 +55,7 @@ class CAVStreamer {
         //set the volume to max (rely on the device's volume control)
         player.volume = 1.0
         player.rate = 1.0   //not sure what this does.  Is it needed?  -JV
-
+        
         /* if either the output width or height is not specified, assume audio only.
         in that case, the function will return nil.  Otherwise, we will create a
          UIView using the avPlayerController and return it to the caller. */
@@ -70,7 +71,8 @@ class CAVStreamer {
         player.play()
         return nil
     }
-
+    
+    
     /* =========================================================================
      ======================================================================== */
     func stop(){

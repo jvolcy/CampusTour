@@ -1,5 +1,5 @@
 //
-//  FirstViewController.swift
+//  HomeViewController.swift
 //  CampusTour
 //
 //  Created by Jerry Volcy on 1/2/18.

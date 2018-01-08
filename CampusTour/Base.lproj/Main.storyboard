@@ -67,7 +67,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PQr-Ze-W5v"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Home" image="first" id="dUr-eG-FBi" userLabel="Home"/>
+                    <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home" id="dUr-eG-FBi" userLabel="Home">
+                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-12"/>
+                    </tabBarItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="pikTourChoice" destination="Nba-9A-znf" id="tGe-Hp-NBv"/>
@@ -106,7 +108,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="35" id="S9u-yt-l9l"/>
                                                 </constraints>
-                                                <state key="normal" title="Button" image="film" backgroundImage="greyButton"/>
+                                                <state key="normal" title="Button" image="map" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnMapTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="nix-Tr-6OH"/>
                                                 </connections>
@@ -193,12 +195,15 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="O1u-W8-tvY"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Tour" image="second" id="cPa-gy-q4n" userLabel="Tour"/>
+                    <tabBarItem key="tabBarItem" title="" image="tour" selectedImage="tour" id="cPa-gy-q4n" userLabel="Tour">
+                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-12"/>
+                    </tabBarItem>
                     <connections>
                         <outlet property="btnMap" destination="BjH-2b-6RD" id="5xd-CY-wtw"/>
                         <outlet property="btnPlayPause" destination="duE-Tu-y1W" id="Kdz-Dj-xMG"/>
                         <outlet property="btnRePlay" destination="vdW-c5-b2h" id="CEf-SR-R1c"/>
                         <outlet property="btnRewind" destination="Kbq-0Y-ftC" id="0iU-Qn-e96"/>
+                        <outlet property="txtTourInfo" destination="qam-ro-KCe" id="3zj-d3-bag"/>
                         <outlet property="viewTourImage" destination="TjP-PV-HJG" id="Uso-4h-Zym"/>
                     </connections>
                 </viewController>
@@ -213,10 +218,67 @@
                     <view key="view" contentMode="scaleToFill" id="rrx-8V-kjz" userLabel="viewAbout">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="CLO-pK-KIE" userLabel="VStackViewMain">
+                                <rect key="frame" x="0.0" y="20" width="375" height="598"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-horizontal-white-png" translatesAutoresizingMaskIntoConstraints="NO" id="yTc-Vi-uLp">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                                        <color key="backgroundColor" red="0.047040393819999998" green="0.1217703851" blue="0.6013642132" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="70" id="CqA-o0-R64"/>
+                                        </constraints>
+                                    </imageView>
+                                    <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TKc-JW-GXI" userLabel="textAboutInfo">
+                                        <rect key="frame" x="0.0" y="70" width="375" height="418"/>
+                                        <attributedString key="attributedText">
+                                            <fragment>
+                                                <string key="content">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="0.97790069913575717" green="0.97664750512709053" blue="0.99853768294232748" alpha="0.0" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <font key="NSFont" size="14" name="HelveticaNeue"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bwq-AO-ngQ" userLabel="viewLogoSpacer">
+                                        <rect key="frame" x="0.0" y="488" width="375" height="110"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="il_logo" translatesAutoresizingMaskIntoConstraints="NO" id="kO1-KO-5ZE">
+                                                <rect key="frame" x="-198" y="5" width="771" height="100"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="100" id="ghV-eV-0Vn"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="110" id="MrY-bo-aEL"/>
+                                            <constraint firstItem="kO1-KO-5ZE" firstAttribute="centerY" secondItem="bwq-AO-ngQ" secondAttribute="centerY" id="bf3-nu-Sgd"/>
+                                            <constraint firstItem="kO1-KO-5ZE" firstAttribute="centerX" secondItem="bwq-AO-ngQ" secondAttribute="centerX" id="zpD-la-3gj"/>
+                                        </constraints>
+                                        <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
+                                    </view>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="CLO-pK-KIE" firstAttribute="trailing" secondItem="3mX-bz-kCW" secondAttribute="trailing" id="5uU-3T-nXY"/>
+                            <constraint firstItem="CLO-pK-KIE" firstAttribute="bottom" secondItem="3mX-bz-kCW" secondAttribute="bottom" id="5uz-PF-Fh6"/>
+                            <constraint firstItem="CLO-pK-KIE" firstAttribute="top" secondItem="3mX-bz-kCW" secondAttribute="top" id="90h-oW-ufh"/>
+                            <constraint firstItem="CLO-pK-KIE" firstAttribute="leading" secondItem="3mX-bz-kCW" secondAttribute="leading" id="x7a-WO-zc1"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="3mX-bz-kCW"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="About" image="first" id="wXu-59-PRH" userLabel="About"/>
+                    <tabBarItem key="tabBarItem" title="" image="about" selectedImage="about" id="wXu-59-PRH" userLabel="About">
+                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-12"/>
+                    </tabBarItem>
+                    <connections>
+                        <outlet property="txtAboutInfo" destination="TKc-JW-GXI" id="DMS-RO-TRn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e3r-81-zsE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -226,10 +288,13 @@
         <scene sceneID="yl2-sM-qoP">
             <objects>
                 <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
-                    <tabBar key="tabBar" opaque="NO" alpha="0.5" contentMode="scaleToFill" id="W28-zg-YXA">
+                    <tabBar key="tabBar" opaque="NO" alpha="0.5" contentMode="scaleAspectFit" id="W28-zg-YXA">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
                         <segue destination="9pv-A4-QxB" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
@@ -244,14 +309,16 @@
     </scenes>
     <resources>
         <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1200" height="900"/>
+        <image name="about" width="36" height="36"/>
         <image name="default_arch" width="645" height="462"/>
-        <image name="film" width="256" height="256"/>
-        <image name="first" width="30" height="30"/>
         <image name="greyButton" width="10" height="10"/>
+        <image name="home" width="36" height="36"/>
+        <image name="il_logo" width="771" height="261"/>
         <image name="logo-horizontal-white-png" width="540" height="172"/>
+        <image name="map" width="256" height="256"/>
         <image name="play" width="256" height="256"/>
         <image name="restart" width="256" height="256"/>
         <image name="rewind" width="256" height="256"/>
-        <image name="second" width="30" height="30"/>
+        <image name="tour" width="36" height="36"/>
     </resources>
 </document>
