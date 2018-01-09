@@ -9,17 +9,13 @@
 /* =========================================================================
  This file houses the Campus Tour location services, CTLocationServices,
  class.  CTLS (Campus Tour Location Services) periodically reads the
- current GPS position and invokes the specified delegate when a new
- reading becomes available.
- Initialize with an update interval in seconds and a delegate object.
- The delegate object must be derived from a class that implements the
- CLLocationManagerDelegate interface.  For example:
+ current GPS position and posts a custom notification to the default
+ notifications center when the location reading becomes available.
+ Initialize with an update interval in seconds.
  
- class ViewController: UIViewController, CLLocationManagerDelegate
- 
- The delegate must implement at least 2 of the interfaces stipulated
- by the CLLocationManagerDelegate interface: didUpdateLocations and
- didFailWithError.  The function stubs are
+ This class derives from CLLocationManagerDelegate interface and
+ implements 2 of the stipulated functions of that interface:
+ didUpdateLocations and didFailWithError.  The function stubs are
  
  func locationManager(_ manager: CLLocationManager,
  didUpdateLocations locations: [CLLocation]) { }
@@ -29,6 +25,27 @@
  func locationManager(_ manager: CLLocationManager,
  didFailWithError error: Error) { }
 
+ The didUpdateLocation delegate of the CLLocationsManager interface
+ posts a notification to the default application Notifications Center.
+ Any actor wishing to be notified of the availability of new GPS
+ data should register a notification observer.  Here is the sample code
+ to do so:
+ 
+ NotificationCenter.default.addObserver(self, selector: #selector(my_func(_:)),
+         name: locationServicesUpdatedLocations, object: nil);
+ 
+ Here, my_func() is the location function on the actor's side.  It can be
+ implemented with this skeleton code:
+ 
+ @objc func my_func(_ notification: Notification){
+     let coord:gps_coord = notification.object as! gps_coord
+     print("got new location!", coord.toString())
+ }
+ Be sure to remove your observer before you quit:
+ deinit {
+ NotificationCenter.default.removeObserver(self)
+ }
+
 
  Your application should update the "Privacy - Location When In Use Usage
  Description" subkey in the project Info.plist.  This is a subkey of
@@ -36,30 +53,61 @@
  subkey is "This App needs your location to deliver information about
  your location on campus."  If the subkey does not exist, it should
  be added under the "Information Property List" key.
+ 
  ======================================================================== */
 
 import Foundation
 import CoreLocation
 
-class CCTLocationServices {
+//create a new global notification name for new GPS data
+let locationServicesUpdatedLocations = NSNotification.Name ("locationServicesUpdatedLocations")
+
+class CCTLocationServices: NSObject, CLLocationManagerDelegate {
     private var locationManager : CLLocationManager!
     private var timer : Timer?
     private var bPause = false
     
-    init (updateIntervalSec:Double, delegate:CLLocationManagerDelegate) {
+    init (updateIntervalSec:Double) {
+        super.init()
+        
         //create the locationManager
         locationManager = CLLocationManager()
         //set the desired location accuracy to max
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         //assign the delegate
-        locationManager.delegate = delegate
+        locationManager.delegate = self
         //get user permission to use location services
         locationManager.requestWhenInUseAuthorization()
         
         //setup the timer
         startTimer(updateIntervalSec: updateIntervalSec)
-        
     }
+
+    /* =========================================================================
+     CLLocationManagerDelegate:didUpdateLocations delegate
+     ======================================================================== */
+    func locationManager(_ manager: CLLocationManager,
+                         didUpdateLocations locations: [CLLocation])
+    {
+        let latestLocation: CLLocation = locations[locations.count - 1]
+        
+        let latestCoord = gps_coord(latitude: latestLocation.coordinate.latitude, longitude: latestLocation.coordinate.longitude)
+
+        /* post a notification to the default notification center.  The object
+         to be passed to the notification observers is the newly acquired
+         GPS coordinates. */
+        NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestCoord)
+
+    }
+
+    /* =========================================================================
+     CLLocationManagerDelegate:didFailWithError delegate
+     ======================================================================== */
+    func locationManager(_ manager: CLLocationManager,
+                         didFailWithError error: Error) {
+        print("******", error, "******")
+    }
+
 
     /* =========================================================================
      The internal CTLS timer start automatically when init() executes.
@@ -129,7 +177,6 @@ class CCTLocationServices {
         if bPause == false {
             locationManager.requestLocation()
             /* the didUpdateLocations() delegate will be called when the request is complete */
-            //print("x")
         }
     }
 

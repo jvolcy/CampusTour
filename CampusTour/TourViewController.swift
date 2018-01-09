@@ -44,7 +44,7 @@ class TourViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         print("TourViewController viewDidLoad")
-        campusTour!.subscribeForNewCoordNotification(f:self.callback)
+        //campusTour!.subscribeForNewCoordNotification(f:self.callback)
         
         //instantiate the A/V Streamer
         AVStreamer = CAVStreamer()
