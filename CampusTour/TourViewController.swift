@@ -10,12 +10,21 @@ import UIKit
 
 class TourViewController: UIViewController {
 
-    @IBOutlet weak var txtTourInfo: UITextView!
+    @IBOutlet weak var txtTourInfo: UITextView! //main tour information attributed text display
     @IBOutlet weak var btnMap: UIButton!
     @IBOutlet weak var btnPlayPause: UIButton!
     @IBOutlet weak var btnRePlay: UIButton!
     @IBOutlet weak var btnRewind: UIButton!
-    @IBOutlet var viewTourImage: UIImageView!
+    @IBOutlet var imgTourImage: UIImageView!    //central display of the tour view
+    /*HStackTitleAndCheck is a horizontal stack view that contais the title and
+     check image at the top of the tour view.  Taken together, these 2 objects
+     occupy the same space as imgTopLogoBar.  Therefore, by controlling the
+     visibility of HStackTitleAndCheck and imgTopLogoBar, we can control wich
+     will be visible to the user. */
+    @IBOutlet weak var hStackTitleAndCheck: UIStackView!
+    @IBOutlet weak var lblTitle: UILabel!   //child of hStackTitleAndCheck
+    @IBOutlet weak var imgCheck: UIImageView!   //child of hStackTitleAndCheck
+    @IBOutlet weak var imgTopLogoBar: UIImageView!  //occupies same physical location as hStackTitleAndCheck
     
     var AVStreamer:CAVStreamer!
 
@@ -45,7 +54,33 @@ class TourViewController: UIViewController {
         btnRePlay.imageView?.contentMode = .scaleAspectFit
         btnRewind.imageView?.contentMode = .scaleAspectFit
         btnMap.imageView?.contentMode = .scaleAspectFit
+        
+        //default to logo display
+        displayTopLogo(coverTitleAndCheck: true)
     }
+
+    /* =========================================================================
+     This function is used to toggle the contents of the blue bar at the top
+     of the tour view.  An argument of true will cover the title and check
+     mark and display the logo.  false covers the logo and displays the title
+     and check mark.
+     
+     The blue bar at the top of the screen may display either the college
+     logo (when there is no POI in range) or, in order of priority:
+     1) the title of the nearest unexplored POI in range (there may be more
+     than 1 in range)
+     2) the title of the nearest POI
+     Along with the title, there is also a check mark graphic that indicates
+     whether or not a POI has been explored (green check), partially
+     explored (empty check) or unexplored (no check).  A partially explored
+     POI is one where the corresponding media has not played to completion.
+     ======================================================================== */
+    func displayTopLogo(coverTitleAndCheck:Bool)
+    {
+        imgTopLogoBar.isHidden = !coverTitleAndCheck
+        hStackTitleAndCheck.isHidden = coverTitleAndCheck
+    }
+
 
     /* =========================================================================
      ======================================================================== */
@@ -62,14 +97,24 @@ class TourViewController: UIViewController {
 
     
     /* =========================================================================
+     This function attempts to play the media (audio or video) at the
+     supplied URL to the supplied UIView.  For audio, pass a nil value
+     for the UIView
      ======================================================================== */
-    func playMedia(url:String)
+    func playMedia(url:String, outputView:UIView?)
     {
-        let avView = AVStreamer.playMedia(url:url, outputUIViewWidth:viewTourImage.bounds.size.width, outputUIViewHeight: viewTourImage.bounds.size.height, showPlaybackControls:false)
-        
-        if let view = avView {
-            viewTourImage.addSubview(view)
-            //viewMain.sendSubview(toBack: view)
+        if let outView = outputView {
+            // a UIView window has been supplied.  Use it for video output
+            let avView = AVStreamer.playMedia(url:url, outputUIViewWidth:outView.bounds.size.width, outputUIViewHeight: outView.bounds.size.height, showPlaybackControls:false)
+            
+            if let view = avView {
+                outView.addSubview(view)
+                //viewMain.sendSubview(toBack: view)
+                }
+        }
+        else {
+            // no UIView was supplied; assume this is audio.  We do not need the returned UIView value
+            AVStreamer.playMedia(url:url, showPlaybackControls:false)
         }
     }
     
@@ -91,7 +136,8 @@ class TourViewController: UIViewController {
         default:
             image = UIImage(named: "pause")
             mediaState = .playing
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4")
+            //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: imgTourImage)
+            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
             displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.rtf", targetView: txtTourInfo)
         }
 

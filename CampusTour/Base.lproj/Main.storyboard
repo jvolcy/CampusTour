@@ -87,27 +87,57 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dlg-Hf-A1s" userLabel="VStackViewMain">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dlg-Hf-A1s" userLabel="vStackMain">
                                 <rect key="frame" x="0.0" y="20" width="375" height="598"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-horizontal-white-png" translatesAutoresizingMaskIntoConstraints="NO" id="l6a-PI-mfa">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ggm-hP-dLs" userLabel="viewLogoAndTitle">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oEZ-w9-E2T" userLabel="hStackTitleAndCheck">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem Ipsum lorem ipsum lorem ipsum lorem ipsum" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="57f-4b-xkx" userLabel="lblTitle">
+                                                        <rect key="frame" x="0.0" y="0.0" width="305" height="70"/>
+                                                        <color key="backgroundColor" red="0.047040393819999998" green="0.1217703851" blue="0.6013642132" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                        <fontDescription key="fontDescription" type="italicSystem" pointSize="24"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check_empty" translatesAutoresizingMaskIntoConstraints="NO" id="IRB-FZ-Krg" userLabel="imgCheck">
+                                                        <rect key="frame" x="305" y="0.0" width="70" height="70"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="70" id="UjY-tb-Brh"/>
+                                                            <constraint firstAttribute="height" constant="70" id="V9R-Hm-Ova"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.047040393819999998" green="0.1217703851" blue="0.6013642132" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            </stackView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-horizontal-white-png" translatesAutoresizingMaskIntoConstraints="NO" id="l6a-PI-mfa" userLabel="imgTopLogoBar">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                                            </imageView>
+                                        </subviews>
                                         <color key="backgroundColor" red="0.047040393819999998" green="0.1217703851" blue="0.6013642132" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="70" id="qFg-nB-wLx"/>
+                                            <constraint firstAttribute="height" constant="70" id="3Qd-SG-UCu"/>
+                                            <constraint firstAttribute="trailing" secondItem="oEZ-w9-E2T" secondAttribute="trailing" id="BYw-Pt-fzE"/>
+                                            <constraint firstItem="oEZ-w9-E2T" firstAttribute="leading" secondItem="ggm-hP-dLs" secondAttribute="leading" id="DWb-Jf-cHd"/>
+                                            <constraint firstItem="oEZ-w9-E2T" firstAttribute="top" secondItem="ggm-hP-dLs" secondAttribute="top" id="KRS-Hb-Xx3"/>
+                                            <constraint firstAttribute="bottom" secondItem="l6a-PI-mfa" secondAttribute="bottom" id="P03-YS-nut"/>
+                                            <constraint firstAttribute="bottom" secondItem="oEZ-w9-E2T" secondAttribute="bottom" id="TWS-uQ-sZJ"/>
+                                            <constraint firstItem="l6a-PI-mfa" firstAttribute="top" secondItem="ggm-hP-dLs" secondAttribute="top" id="Ua6-hF-jSH"/>
+                                            <constraint firstItem="l6a-PI-mfa" firstAttribute="leading" secondItem="ggm-hP-dLs" secondAttribute="leading" id="WuG-xw-mfV"/>
+                                            <constraint firstAttribute="trailing" secondItem="l6a-PI-mfa" secondAttribute="trailing" id="ipC-Jm-3r0"/>
                                         </constraints>
-                                    </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="viewTourImage">
+                                    </view>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
                                         <rect key="frame" x="0.0" y="70" width="375" height="352"/>
                                     </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="KpR-Br-s7l" userLabel="HStackViewButtons">
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="KpR-Br-s7l" userLabel="hStackButtons">
                                         <rect key="frame" x="0.0" y="422" width="375" height="35"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjH-2b-6RD" userLabel="btnMap">
                                                 <rect key="frame" x="0.0" y="0.0" width="94" height="35"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="35" id="S9u-yt-l9l"/>
-                                                </constraints>
                                                 <state key="normal" title="Button" image="map" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnMapTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="nix-Tr-6OH"/>
@@ -115,9 +145,6 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="duE-Tu-y1W" userLabel="btnPlayPause">
                                                 <rect key="frame" x="94" y="0.0" width="93.5" height="35"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="35" id="ZG1-Vb-V9K"/>
-                                                </constraints>
                                                 <state key="normal" title="Button" image="play" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnPlayPauseTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="1ce-TO-hJY"/>
@@ -125,9 +152,6 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kbq-0Y-ftC" userLabel="btnRewind">
                                                 <rect key="frame" x="187.5" y="0.0" width="94" height="35"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="35" id="HhU-H5-ZOS"/>
-                                                </constraints>
                                                 <state key="normal" title="Button" image="rewind" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnRewindTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="Pb8-NO-77t"/>
@@ -135,15 +159,19 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdW-c5-b2h" userLabel="btnRePlay">
                                                 <rect key="frame" x="281.5" y="0.0" width="93.5" height="35"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="35" id="rBK-8u-T8v"/>
-                                                </constraints>
                                                 <state key="normal" title="Button" image="restart" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnRePlayTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="SUa-Ps-evK"/>
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstItem="duE-Tu-y1W" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="Hkf-rl-gkY"/>
+                                            <constraint firstItem="BjH-2b-6RD" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="fAc-Ae-fWw"/>
+                                            <constraint firstItem="vdW-c5-b2h" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="xXS-fV-BvR"/>
+                                            <constraint firstAttribute="height" constant="35" id="yUU-RO-7Vv"/>
+                                            <constraint firstItem="Kbq-0Y-ftC" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="ytd-Da-07O"/>
+                                        </constraints>
                                     </stackView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qam-ro-KCe" userLabel="txtTourInfo">
                                         <rect key="frame" x="0.0" y="457" width="375" height="141"/>
@@ -157,7 +185,7 @@
                                                 </attributes>
                                             </fragment>
                                             <fragment>
-                                                <mutableString key="content"> dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. </mutableString>
+                                                <string key="content"> dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. </string>
                                                 <attributes>
                                                     <font key="NSFont" size="14" name="Cambria-Italic"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
@@ -171,7 +199,7 @@
                                                 </attributes>
                                             </fragment>
                                             <fragment>
-                                                <mutableString key="content"> dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</mutableString>
+                                                <string key="content"> dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                 <attributes>
                                                     <font key="NSFont" size="14" name="Cambria-Italic"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
@@ -203,8 +231,12 @@
                         <outlet property="btnPlayPause" destination="duE-Tu-y1W" id="Kdz-Dj-xMG"/>
                         <outlet property="btnRePlay" destination="vdW-c5-b2h" id="CEf-SR-R1c"/>
                         <outlet property="btnRewind" destination="Kbq-0Y-ftC" id="0iU-Qn-e96"/>
+                        <outlet property="hStackTitleAndCheck" destination="oEZ-w9-E2T" id="VA1-EU-SGe"/>
+                        <outlet property="imgCheck" destination="IRB-FZ-Krg" id="yG1-75-Is7"/>
+                        <outlet property="imgTopLogoBar" destination="l6a-PI-mfa" id="euI-aj-T5e"/>
+                        <outlet property="imgTourImage" destination="TjP-PV-HJG" id="yqh-Da-dAx"/>
+                        <outlet property="lblTitle" destination="57f-4b-xkx" id="gcz-9N-Fm1"/>
                         <outlet property="txtTourInfo" destination="qam-ro-KCe" id="3zj-d3-bag"/>
-                        <outlet property="viewTourImage" destination="TjP-PV-HJG" id="Uso-4h-Zym"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
@@ -310,6 +342,7 @@
     <resources>
         <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1200" height="900"/>
         <image name="about" width="36" height="36"/>
+        <image name="check_empty" width="256" height="256"/>
         <image name="default_arch" width="645" height="462"/>
         <image name="greyButton" width="10" height="10"/>
         <image name="home" width="36" height="36"/>

@@ -12,8 +12,10 @@ import AVKit        //for AVPlayerViewController
 
 /* =========================================================================
  The CAVStreamer manages the A/V for the Campus Tour App.
+ CAVStreamer derives from NSObject so that we can use the notification
+ system to get notice when audio or video media has finished playing.
  ======================================================================== */
-class CAVStreamer {
+class CAVStreamer: NSObject {
     
     private var player:AVPlayer!
     private var avPlayerController:AVPlayerViewController!
@@ -21,14 +23,41 @@ class CAVStreamer {
     /* =========================================================================
      Create the avPlayerController on startup
      ======================================================================== */
-    init()
+    override init()
     {
-        avPlayerController = AVPlayerViewController()
+        super.init()
         
+        //instantiate the A/V player
+        avPlayerController = AVPlayerViewController()
+
         //fill the View with the content (may clip the video)
         avPlayerController.videoGravity = "AVLayerVideoGravityResizeAspectFill"
+        
+        /* register for notification when an AVPalerItem has finished playing.  Note that
+         notification will not be sent if the player is stopped.  We will use the
+         default application notification center*/
+        NotificationCenter.default.addObserver(self, selector: #selector(mediaPlayBackFinished(_:)),
+                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil);
+
     }
     
+    
+    /* =========================================================================
+     Add a deinit to this class to remove it from the default notification
+     center
+     ======================================================================== */
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    
+    
+    /* =========================================================================
+     callback frunction for the media finished playing notification
+     ======================================================================== */
+    @objc func mediaPlayBackFinished(_ notification: Notification){
+        print("playbackFinished")
+    }
     
     /* =========================================================================
      playMedia() is used to stream either audio or video media based on a
