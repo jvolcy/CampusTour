@@ -38,7 +38,7 @@
  be added under the "Information Property List" key.
  ======================================================================== */
 
-import UIKit
+import Foundation
 import CoreLocation
 
 class CCTLocationServices {

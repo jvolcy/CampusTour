@@ -136,29 +136,11 @@ class TourViewController: UIViewController {
         default:
             image = UIImage(named: "pause")
             mediaState = .playing
-            //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: imgTourImage)
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
+            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: imgTourImage)
+            //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
             displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.rtf", targetView: txtTourInfo)
         }
 
-/*
-        if mediaState == .playing {
-            image = UIImage(named: "play")
-            mediaState = .paused
-            AVStreamer.pause()
-        }
-        else if mediaState == .paused {
-            AVStreamer.unpause()
-            image = UIImage(named: "pause")
-            mediaState = .playing
-        }
-        else {
-            image = UIImage(named: "pause")
-            mediaState = .playing
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4")
-            displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.rtf", targetView: txtTourInfo)
-        }
-*/
         btnPlayPause.setImage(image, for: .normal)
     }
 
