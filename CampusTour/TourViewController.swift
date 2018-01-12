@@ -50,23 +50,42 @@ class TourViewController: UIViewController {
  
     // ---------------------- START CAMPUS MAP DATA ----------------------------
     /* The data in this section is specific to the image file campus_map.png.
-     This file is 4538 × 3956 and 3,564,877 bytes.  Changing this file will
-     invalidate the data below. */
-    static let CAMPUS_TOP_LATITUDE = 33.747151
-    static let CAMPUS_BOTTOM_LATITUDE = 33.743234
-    static let CAMPUS_LEFT_LONGITUDE = -84.414763
-    static let CAMPUS_RIGHT_LONGITUDE = -84.408572
+     This file is 4538 × 3956 and 3,564,877 bytes.  Using a different campus
+     image file will invalidate the data below. */
+    static let CAMPUS_IMG_SIZE_X = 4538
+    static let CAMPUS_IMG_SIZE_Y = 3956
+    
+    static let CAL_POINT1_X = 540
+    static let CAL_POINT1_Y = 454
+    static let CAL_POINT1_LAT = 33.746832
+    static let CAL_POINT1_LON = -84.413719
+
+    static let CAL_POINT2_X = 3551
+    static let CAL_POINT2_Y = 2631
+    static let CAL_POINT2_LAT = 33.744402
+    static let CAL_POINT2_LON = -84.409692
+    
+    static let SLOPEX = (CAL_POINT2_LON - CAL_POINT1_LON)/Double(CAL_POINT2_X - CAL_POINT1_X)
+    static let CAMPUS_LEFT_LONGITUDE = CAL_POINT1_LON + Double(0 - CAL_POINT1_X) * SLOPEX
+    static let CAMPUS_RIGHT_LONGITUDE = CAL_POINT1_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT1_X) * SLOPEX
+
+    static let SLOPEY = (CAL_POINT2_LAT - CAL_POINT1_LAT)/Double(CAL_POINT2_Y - CAL_POINT1_Y)
+    static let CAMPUS_TOP_LATITUDE = CAL_POINT1_LAT + Double(0 - CAL_POINT1_Y) * SLOPEY
+    static let CAMPUS_BOTTOM_LATITUDE = CAL_POINT1_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT1_Y) * SLOPEY
+
     let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
     let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
     // ---------------------- END CAMPUS MAP DATA ------------------------------
     
     //---------- joystick controls constants ----------
-    let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/40
-    let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/40
+    let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
+    let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
     
     
     /* =========================================================================
-     ======================================================================== */
+     (540, 454) -> 33.746832, -84.413719
+     
+     (3551, 2631) -> 33.744402, -84.409692     ======================================================================== */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -125,17 +144,17 @@ class TourViewController: UIViewController {
      ======================================================================== */
     @objc func gotNewLocationFromLocationServices(_ notification: Notification){
         let coord:CLLocation = notification.object as! CLLocation
-        print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
+        //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
+        print("$", terminator:"")
         setMarker(coord: coord)
         
         let poisInRange = campusTour?.poiManager.getPoisInRange(coord: coord)
-        print("#poisInRange = \(poisInRange?.count)")
+        //print("#poisInRange = \(poisInRange?.count)")
+        /*
         for poi in poisInRange! {
             print("\(poi.poiID!) distance=\(poi.coord.distance(from: coord)) meters.")
         }
-        
-        //don't update the buildings layer if we are not in map mode
-        if tourMode != .map {return}
+        */
 
         //do not update the map if media is paused or playing
         //this prevents the building layer being overlayed on
@@ -145,12 +164,19 @@ class TourViewController: UIViewController {
         let poi = campusTour?.poiManager.getNearestPoiInRange(coord: coord)
         if poi != nil {
             //select the building layer with the name that mathes the poiID
-            imgBuildings.image = UIImage(named:poi!.poiID)
-            imgBuildings.isHidden = false
+            //don't only update the buildings layer if we are in map mode
+            if tourMode == .map{
+                imgBuildings.image = UIImage(named:poi!.poiID)
+                imgBuildings.isHidden = false
+            }
+            lblTitle.text = poi!.title
+            imgCheck.image = UIImage(named:"check_empty")
+            displayTopLogo(coverTitleAndCheck: false)
         }
         else {
             //if we are not near a POI, turn off the building layer
             imgBuildings.isHidden = true
+            displayTopLogo(coverTitleAndCheck: true)
         }
         
         //print("distance to ACC = \(poiManager.getPoi(byID: "ACC")?.coord.distance(from: test_coord))")
@@ -202,8 +228,15 @@ class TourViewController: UIViewController {
      ======================================================================== */
     func displayTopLogo(coverTitleAndCheck:Bool)
     {
-        imgTopLogoBar.isHidden = !coverTitleAndCheck
-        hStackTitleAndCheck.isHidden = coverTitleAndCheck
+        if coverTitleAndCheck == true {
+            imgTopLogoBar.isHidden = false
+            hStackTitleAndCheck.isHidden = true
+        }
+        else{
+            imgTopLogoBar.isHidden = true
+            hStackTitleAndCheck.isHidden = false
+        }
+        
     }
 
 
@@ -324,7 +357,7 @@ class TourViewController: UIViewController {
         //interpolate y
         let y = imageTop + (coord.coordinate.latitude-TourViewController.CAMPUS_TOP_LATITUDE) * (imageBottom - imageTop)/(TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)
         
-        //print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
+        print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
         return CGPoint(x:x, y:y)
     }
     
