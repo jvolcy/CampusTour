@@ -23,7 +23,7 @@ class CCampusTour : NSObject {
         super.init()
         
         //instantiate the GPS lcoations services
-        ctLocationServices = CCTLocationServices(updateIntervalSec:4.0)
+        ctLocationServices = CCTLocationServices(updateIntervalSec:2.0)
         
         //instantiate the POI manager
         poiManager = CPoiManager()
@@ -34,7 +34,7 @@ class CCampusTour : NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(gotNewLocationFromLocationServices(_:)),
                                                name: locationServicesUpdatedLocations, object: nil);
 
-        
+        /*
         //let test_coord = gps_coord(latitude: 33.745135,longitude: -84.412361) //near Mcalpin
         let test_coord = CLLocation(latitude: 33.745193,longitude: -84.409265)   //tapley & SS
 
@@ -45,7 +45,7 @@ class CCampusTour : NSObject {
         }
         
         print("distance to ACC = \(poiManager.getPoi(byID: "ACC")?.coord.distance(from: test_coord))")
-
+        */
     }
 
 
@@ -63,7 +63,7 @@ class CCampusTour : NSObject {
      ======================================================================== */
     @objc func gotNewLocationFromLocationServices(_ notification: Notification){
         let coord:CLLocation = notification.object as! CLLocation
-        print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
+        //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
 
     }
     

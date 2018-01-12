@@ -254,7 +254,6 @@
                                                 <rect key="frame" x="25" y="0.0" width="25" height="25"/>
                                                 <state key="normal" backgroundImage="greyButton"/>
                                                 <connections>
-                                                    <action selector="btnJoyUpTouchDownRepeat:" destination="8rJ-Kc-sve" eventType="touchDownRepeat" id="iLS-po-XqZ"/>
                                                     <action selector="btnJoyUpTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="jb2-Dx-EvM"/>
                                                 </connections>
                                             </button>
@@ -344,6 +343,7 @@
                         <outlet property="btnRePlay" destination="vdW-c5-b2h" id="CEf-SR-R1c"/>
                         <outlet property="btnRewind" destination="Kbq-0Y-ftC" id="0iU-Qn-e96"/>
                         <outlet property="hStackTitleAndCheck" destination="oEZ-w9-E2T" id="VA1-EU-SGe"/>
+                        <outlet property="imgBuildings" destination="Y6e-OM-ZYe" id="kfi-r1-oIg"/>
                         <outlet property="imgCheck" destination="IRB-FZ-Krg" id="yG1-75-Is7"/>
                         <outlet property="imgMarker" destination="c5s-mO-cMm" id="wIp-HW-VSJ"/>
                         <outlet property="imgTopLogoBar" destination="l6a-PI-mfa" id="euI-aj-T5e"/>

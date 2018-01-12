@@ -15,6 +15,12 @@ var campusTour:CCampusTour? = nil
 //global Latest GPS coordinates
 var latestGpsLocation = CLLocation()
 
+/* SCCT_DebugMode is a global boolean that switches between running in debug
+ mode and regular mode.  In debug mode, the global GPS locations,
+ latestGpsLocation, are simulated through the use of a virtual joystick. */
+var SCCT_DebugMode = true
+
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

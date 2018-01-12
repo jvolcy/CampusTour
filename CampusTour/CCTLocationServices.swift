@@ -97,12 +97,19 @@ class CCTLocationServices: NSObject, CLLocationManagerDelegate {
          NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestCoord)
         */
         
-        //update the global GPS coordinates
-        latestGpsLocation = locations[locations.count - 1]
-
+        
+        if SCCT_DebugMode == false {
+            /* update the global GPS coordinates if we are not in
+            debug mode.  In debug mode, those coordinates are updated
+            elsewhere. */
+            latestGpsLocation = locations[locations.count - 1]
+        }
+        
         /* post a notification to the default notification center.  The object
          to be passed to the notification observers is the newly acquired
          GPS coordinates. */
+        /* note that whether or not we are in debug mode, we send a
+         notification of a newly available location. */
         NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestGpsLocation)
 
     }

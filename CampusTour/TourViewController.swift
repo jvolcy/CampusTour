@@ -11,6 +11,7 @@ import AVKit
 import CoreLocation
 
 class TourViewController: UIViewController {
+    
 
     @IBOutlet weak var txtTourInfo: UITextView! //main tour information attributed text display
     @IBOutlet weak var btnMap: UIButton!
@@ -22,6 +23,7 @@ class TourViewController: UIViewController {
     @IBOutlet weak var vStackJoyStick: UIStackView!
     @IBOutlet weak var viewTour: UIView!
     @IBOutlet weak var imgMarker: UIImageView!
+    @IBOutlet weak var imgBuildings: UIImageView!
     
     /*HStackTitleAndCheck is a horizontal stack view that contais the title and
      check image at the top of the tour view.  Taken together, these 2 objects
@@ -42,17 +44,43 @@ class TourViewController: UIViewController {
     var mediaState:EMediaState = .stopped
     
     //enumerate the tour modes
-    enum ETourMode {case map, walk}
+    enum ETourMode {case map, walk, notSet}
     //set the default tour mode
-    var tourMode:ETourMode = .walk
+    var tourMode:ETourMode = .notSet
+ 
+    // ---------------------- START CAMPUS MAP DATA ----------------------------
+    /* The data in this section is specific to the image file campus_map.png.
+     This file is 4538 × 3956 and 3,564,877 bytes.  Changing this file will
+     invalidate the data below. */
+    static let CAMPUS_TOP_LATITUDE = 33.747151
+    static let CAMPUS_BOTTOM_LATITUDE = 33.743234
+    static let CAMPUS_LEFT_LONGITUDE = -84.414763
+    static let CAMPUS_RIGHT_LONGITUDE = -84.408572
+    let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
+    let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
+    // ---------------------- END CAMPUS MAP DATA ------------------------------
+    
+    //---------- joystick controls constants ----------
+    let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/40
+    let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/40
+    
     
     /* =========================================================================
      ======================================================================== */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        print("TourViewController viewDidLoad")
-        //campusTour!.subscribeForNewCoordNotification(f:self.callback)
+
+        //set the default tour mode
+        setTourMode(.walk)
+        
+        if SCCT_DebugMode == true {
+            /* set the default location to the center of the map if we are in
+ debug mode. */
+            let poi = campusTour?.poiManager.getPoi(byID: "MANLEY_CENTER")
+            latestGpsLocation = poi!.coord //CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
+            setMarker(coord: latestGpsLocation)
+        }
         
         //instantiate the A/V Streamer
         AVStreamer = CAVStreamer()
@@ -74,6 +102,13 @@ class TourViewController: UIViewController {
                             name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
                             object: nil);
         
+        /* sign up for notification from location services.  This notification
+         is a custom notification that tell us that a newly update GPS
+         location is available */
+        NotificationCenter.default.addObserver(self,
+                            selector: #selector(gotNewLocationFromLocationServices(_:)),
+                            name: locationServicesUpdatedLocations,
+                            object: nil);
     }
     
     /* =========================================================================
@@ -84,6 +119,43 @@ class TourViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
+    /* =========================================================================
+     newly updated GPS coordinate notifications callback function.  The
+     notificaiton argument is a gps_coord object.
+     ======================================================================== */
+    @objc func gotNewLocationFromLocationServices(_ notification: Notification){
+        let coord:CLLocation = notification.object as! CLLocation
+        print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
+        setMarker(coord: coord)
+        
+        let poisInRange = campusTour?.poiManager.getPoisInRange(coord: coord)
+        print("#poisInRange = \(poisInRange?.count)")
+        for poi in poisInRange! {
+            print("\(poi.poiID!) distance=\(poi.coord.distance(from: coord)) meters.")
+        }
+        
+        //don't update the buildings layer if we are not in map mode
+        if tourMode != .map {return}
+
+        //do not update the map if media is paused or playing
+        //this prevents the building layer being overlayed on
+        //the viewTour view
+        if mediaState == .paused || mediaState == .playing {return}
+        
+        let poi = campusTour?.poiManager.getNearestPoiInRange(coord: coord)
+        if poi != nil {
+            //select the building layer with the name that mathes the poiID
+            imgBuildings.image = UIImage(named:poi!.poiID)
+            imgBuildings.isHidden = false
+        }
+        else {
+            //if we are not near a POI, turn off the building layer
+            imgBuildings.isHidden = true
+        }
+        
+        //print("distance to ACC = \(poiManager.getPoi(byID: "ACC")?.coord.distance(from: test_coord))")
+
+    }
     
     /* =========================================================================
      callback frunction for the media finished playing notification.  We
@@ -100,6 +172,7 @@ class TourViewController: UIViewController {
         removed.  Also, if the user clicks on map view, the window
         should be removed. */
         avView?.removeFromSuperview()       //***TEMP
+        mediaState = .stopped
         /*
         if let poi = campusTour?.poiManager.getPoi(byVideoUrl: url) {
             if poi == campusTour?.poiManager.getNearestPoiInRange(coord: <#T##gps_coord#>) {
@@ -227,6 +300,46 @@ class TourViewController: UIViewController {
         }
     }
 
+    /* =========================================================================
+     static let CAMPUS_TOP_LATITUDE = 33.747151
+     static let CAMPUS_BOTTOM_LATITUDE = 33.743234
+     static let CAMPUS_LEFT_LONGITUDE = -84.414763
+     static let CAMPUS_RIGHT_LONGITUDE = -84.408572
+
+     ======================================================================== */
+    func gpsCoordToPoints(coord:CLLocation) -> CGPoint {
+        //get the top, bottom, left and right pixel coordinates of the image
+        let imagePointSize = getImagePointSizeInImageView(imageView: imgTourImage)
+        let imageLeft = 0.0
+        let imageTop = 0.0
+        let imageRight = Double(imagePointSize.width-1)
+        let imageBottom = Double(imagePointSize.height-1)
+        
+        //print(imageLeft, coord.coordinate.longitude, (imageRight - imageLeft), (TourViewController.CAMPUS_RIGHT_LONGITUDE-TourViewController.CAMPUS_LEFT_LONGITUDE))
+        //print(imageTop, coord.coordinate.longitude, (imageBottom - imageTop), (TourViewController.CAMPUS_BOTTOM_LATITUDE-TourViewController.CAMPUS_TOP_LATITUDE))
+
+        //interpolate x
+        let x = imageLeft + (coord.coordinate.longitude-TourViewController.CAMPUS_LEFT_LONGITUDE) * (imageRight - imageLeft)/(TourViewController.CAMPUS_RIGHT_LONGITUDE-TourViewController.CAMPUS_LEFT_LONGITUDE)
+        
+        //interpolate y
+        let y = imageTop + (coord.coordinate.latitude-TourViewController.CAMPUS_TOP_LATITUDE) * (imageBottom - imageTop)/(TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)
+        
+        //print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
+        return CGPoint(x:x, y:y)
+    }
+    
+    
+    /* =========================================================================
+     function that draws the marker on the image.  The location of the marker
+     is in gps coordinates.
+     ======================================================================== */
+    func setMarker(coord:CLLocation) {
+        //draw the marker
+        setMarkerOnImageView(marker:imgMarker, targetView: imgTourImage, targetLocation: gpsCoordToPoints(coord: coord))
+        
+        //update the label
+        lblGpsCoord.text = "(\(coord.coordinate.latitude), \(coord.coordinate.longitude))"
+    }
 
     /* =========================================================================
      This function attempts to superimpose the supplied UIView object
@@ -242,7 +355,7 @@ class TourViewController: UIViewController {
      ======================================================================== */
     func setMarkerOnImageView(marker:UIView, targetView:UIImageView, targetLocation:CGPoint){
         
-        let targetImgOrigin = getImageOffsetInUImageView(imageView: targetView)
+        let targetImgOrigin = getImageOffsetInImageView(imageView: targetView)
         
         //translate the point to put it in frame coordinates
         let targetLocationInFrameCoord = CGPoint(x:targetLocation.x + targetImgOrigin.x, y:targetLocation.y + targetImgOrigin.y)
@@ -251,6 +364,41 @@ class TourViewController: UIViewController {
         
         //draw the marker at the offset position
         marker.center = CGPoint(x:targetLocationInFrameCoord.x,  y:targetLocationInFrameCoord.y)
+    }
+    
+    
+    /* =========================================================================
+     Given a UIImageView object, this function attempts to calculate the
+     size of the image in the view in points.
+     The function is intended to work on images that are "aspect fitted" in
+     their frame.  In other words, the entire aspect-preserved image must
+     be displayed for the coordinate transforms to work properly.
+     "aspect-fitted" images often have blank border on the left and right or
+     on top and bottom, depending on which dimension limits the size of the
+     image in its frame.  This function handles both cases and returns the
+     image size as a CGSize.
+     ======================================================================== */
+    func getImagePointSizeInImageView(imageView:UIImageView) -> CGSize {
+        let imagePixelSize = imageView.image!.size
+        let imageFrameSize = imageView.frame.size
+        let imageAR = imagePixelSize.width/imagePixelSize.height
+        let imageFrameAR = imageView.frame.width/imageView.frame.height
+        
+        var imagePointSize = CGSize()
+        //determine the location of the image relative to its super view
+        if imageFrameAR > imageAR {
+            //print("limited by height")
+            imagePointSize.height = imageFrameSize.height
+            imagePointSize.width = imagePointSize.height*imagePixelSize.width/imagePixelSize.height
+            //print(imagePointSize)
+        }
+        else {
+            //print("limited by width")
+            imagePointSize.width = imageFrameSize.width
+            imagePointSize.height = imagePointSize.width*imagePixelSize.height/imagePixelSize.width
+            //print(imagePointSize)
+        }
+        return imagePointSize
     }
     
     
@@ -265,31 +413,9 @@ class TourViewController: UIViewController {
      image in its frame.  This function handles both cases and returns the
      offset of the image as a CGPoint.
      ======================================================================== */
-    func getImageOffsetInUImageView(imageView:UIImageView) -> (CGPoint) {
-        //let campusImageOriginRelativeToSuperView = imgCampusMap.frame.origin
-        let imagePixelSize = imageView.image!.size
+    func getImageOffsetInImageView(imageView:UIImageView) -> CGPoint {
         let imageFrameSize = imageView.frame.size
-        let imageAR = imagePixelSize.width/imagePixelSize.height
-        let imageFrameAR = imageView.frame.width/imageView.frame.height
-        
-        var imagePointSize = CGSize()
-        //determine the location of the image relative to its super view
-        if imageFrameAR > imageAR {
-            print("limited by height")
-            imagePointSize.height = imageFrameSize.height
-            imagePointSize.width = imagePointSize.height*imagePixelSize.width/imagePixelSize.height
-            
-            //print(imagePointSize)
-        }
-        else {
-            print("limited by width")
-            imagePointSize.width = imageFrameSize.width
-            imagePointSize.height = imagePointSize.width*imagePixelSize.height/imagePixelSize.width
-            
-            //print(imagePointSize)
-        }
-        
-        //let targetImgOrigin = CGPoint(x:0, y:0)
+        let imagePointSize = getImagePointSizeInImageView(imageView: imageView)
         let imageOrigin = CGPoint(x:(imageFrameSize.width-imagePointSize.width)/2, y:(imageFrameSize.height-imagePointSize.height)/2)
         
         return imageOrigin
@@ -324,7 +450,38 @@ class TourViewController: UIViewController {
         
     }
 
+    /* =========================================================================
+     ======================================================================== */
+    func setTourMode(_ tourMode:ETourMode) {
+        var image:UIImage?
+        var tour_image:UIImage?
 
+        if tourMode == self.tourMode {return}   //nothing to do
+        
+        switch tourMode {
+        case .map:
+            image = UIImage(named: "film")
+            tour_image = UIImage(named: "campus_map")
+            imgTourImage.contentMode = .scaleAspectFit
+            imgBuildings.isHidden = false
+            imgMarker.isHidden = false
+            self.tourMode = .map
+        case .walk:
+            image = UIImage(named: "map")
+            tour_image = UIImage(named: "default_arch")
+            imgTourImage.contentMode = .scaleAspectFill
+            imgBuildings.isHidden = true
+            imgMarker.isHidden = true
+            self.tourMode = .walk
+        default:
+            print("invalid tour mode: \(tourMode)")
+        }   //switch
+        
+        btnMap.setImage(image, for: .normal)
+        imgTourImage.image = tour_image //.setImage(tour_image, for: .normal)        i
+        
+    }   //func
+    
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnRewindTouchUpInside(_ sender: Any) {
@@ -339,69 +496,60 @@ class TourViewController: UIViewController {
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnMapTouchUpInside(_ sender: Any) {
-        var image:UIImage?
-        var tour_image:UIImage?
-        
         switch tourMode {
-        case .map:
-            image = UIImage(named: "film")
-            tour_image = UIImage(named: "campus_map")
-            imgTourImage.contentMode = .scaleAspectFit
-            tourMode = .walk
-        case .walk:
-            image = UIImage(named: "map")
-            tour_image = UIImage(named: "default_arch")
-            imgTourImage.contentMode = .scaleAspectFill
-            tourMode = .map
+        case .walk: //current mode is walk, so switch to map
+            setTourMode(.map)
+        case .map:  //current mode is map, so switch to walk
+            setTourMode(.walk)
+        default:
+            break
+            //print("invalid tour mode.")
         }   //switch
-        
-        btnMap.setImage(image, for: .normal)
-        imgTourImage.image = tour_image //.setImage(tour_image, for: .normal)        i
-        
-
     }   //func
     
     
-    let CAMPUS_TOP_LATITUDE = 33.747151
-    let CAMPUS_BOTTOM_LATITUDE = 33.743234
-    let CAMPUS_LEFT_LONGITUDE = -84.414763
-    let CAMPUS_RIGHT_LONGITUDE = -84.408572
+
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyUpTouchUpInside(_ sender: Any) {
+        latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude - JOYSTICK_Y_INC, longitude:latestGpsLocation.coordinate.longitude)
+        setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyDownTouchUpInside(_ sender: Any) {
+        latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude + JOYSTICK_Y_INC, longitude:latestGpsLocation.coordinate.longitude)
+        setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyRightTouchUpInside(_ sender: Any) {
+        latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude, longitude:latestGpsLocation.coordinate.longitude + JOYSTICK_X_INC)
+        setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyLeftTouchUpInside(_ sender: Any) {
+        latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude, longitude:latestGpsLocation.coordinate.longitude - JOYSTICK_X_INC)
+        setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      Use the middle button to go back to the mniddke
      ======================================================================== */
     @IBAction func btnJoyMiddleTouchUpInside(_ sender: Any) {
-        let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
-        let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
-        setMarkerOnImageView(marker: imgMarker, targetView: imgTourImage, targetLocation: CGPoint(x:50, y:50))
+        latestGpsLocation = CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
+        setMarker(coord: latestGpsLocation)
     }
     
-    /* =========================================================================
-     campus upper left:  33.747151, -84.414763
-     campus lower right: 33.743234, -84.408572
-     Delta:               0.003917,  -0.006191
-     ======================================================================== */
-    @IBAction func btnJoyUpTouchDownRepeat(_ sender: Any) {
-    }
+
 }
 
+
+/* =========================================================================
+ ======================================================================== */
+//----------  ----------
 
