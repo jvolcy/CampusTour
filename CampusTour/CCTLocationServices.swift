@@ -89,14 +89,21 @@ class CCTLocationServices: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager,
                          didUpdateLocations locations: [CLLocation])
     {
+        /*
         let latestLocation: CLLocation = locations[locations.count - 1]
         
         let latestCoord = gps_coord(latitude: latestLocation.coordinate.latitude, longitude: latestLocation.coordinate.longitude)
+         
+         NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestCoord)
+        */
+        
+        //update the global GPS coordinates
+        latestGpsLocation = locations[locations.count - 1]
 
         /* post a notification to the default notification center.  The object
          to be passed to the notification observers is the newly acquired
          GPS coordinates. */
-        NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestCoord)
+        NotificationCenter.default.post(name: locationServicesUpdatedLocations, object: latestGpsLocation)
 
     }
 

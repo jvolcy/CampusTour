@@ -213,12 +213,96 @@
                                     <constraint firstItem="qam-ro-KCe" firstAttribute="height" secondItem="TjP-PV-HJG" secondAttribute="height" multiplier="0.4" id="DeQ-Gx-QCs"/>
                                 </constraints>
                             </stackView>
+                            <stackView opaque="NO" alpha="0.59999999999999998" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="2UU-ea-gLl" userLabel="vStackJoyStick">
+                                <rect key="frame" x="0.0" y="296" width="75" height="75"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="nY5-Nw-obZ" userLabel="hStackJoyRow1">
+                                        <rect key="frame" x="0.0" y="0.0" width="75" height="25"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dka-NA-Zjf">
+                                                <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sMz-j6-No7" userLabel="btnJoyUp">
+                                                <rect key="frame" x="25" y="0.0" width="25" height="25"/>
+                                                <state key="normal" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnJoyUpTouchDownRepeat:" destination="8rJ-Kc-sve" eventType="touchDownRepeat" id="iLS-po-XqZ"/>
+                                                    <action selector="btnJoyUpTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="jb2-Dx-EvM"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oCg-pd-4ZF">
+                                                <rect key="frame" x="50" y="0.0" width="25" height="25"/>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="ttu-DQ-1bE" userLabel="hStackJoyRow2">
+                                        <rect key="frame" x="0.0" y="25" width="75" height="25"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ueL-EW-Oyg" userLabel="btnJoyLeft">
+                                                <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                                <state key="normal" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnJoyLeftTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="y2N-Yo-iNj"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2UY-gJ-5Hz" userLabel="btnJoyMiddle">
+                                                <rect key="frame" x="25" y="0.0" width="25" height="25"/>
+                                                <state key="normal" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnJoyMiddleTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="0qL-KN-eTq"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T17-QY-dHA" userLabel="btnJoyRight">
+                                                <rect key="frame" x="50" y="0.0" width="25" height="25"/>
+                                                <state key="normal" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnJoyRightTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="uVC-sC-GPp"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eRz-tk-84M" userLabel="hStackJoyRow3">
+                                        <rect key="frame" x="0.0" y="50" width="75" height="25"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aen-uU-XJr">
+                                                <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wkb-kk-pRh" userLabel="btnJoyDown">
+                                                <rect key="frame" x="25" y="0.0" width="25" height="25"/>
+                                                <state key="normal" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnJoyDownTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="i7F-TU-OVe"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qkx-Tc-TLi">
+                                                <rect key="frame" x="50" y="0.0" width="25" height="25"/>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="75" id="SdH-Ja-qvi"/>
+                                    <constraint firstAttribute="height" constant="75" id="ceH-6F-qAp"/>
+                                </constraints>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.45000000000000001" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="(37.335739, -122.081107)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q8I-QN-ZHe" userLabel="lblGpsCoord">
+                                <rect key="frame" x="0.0" y="90" width="375" height="20.5"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="2UU-ea-gLl" firstAttribute="centerY" secondItem="QS5-Rx-YEW" secondAttribute="centerY" id="5bM-ba-Wzy"/>
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="top" secondItem="O1u-W8-tvY" secondAttribute="top" id="UAo-Xi-CdY"/>
+                            <constraint firstItem="q8I-QN-ZHe" firstAttribute="top" secondItem="O1u-W8-tvY" secondAttribute="top" constant="70" id="aKc-cK-9OP"/>
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="leading" secondItem="O1u-W8-tvY" secondAttribute="leading" id="bsx-DB-Ez7"/>
+                            <constraint firstItem="2UU-ea-gLl" firstAttribute="leading" secondItem="O1u-W8-tvY" secondAttribute="leading" id="hFq-TH-iSW"/>
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="bottom" secondItem="O1u-W8-tvY" secondAttribute="bottom" id="qKS-pz-MZc"/>
+                            <constraint firstItem="q8I-QN-ZHe" firstAttribute="trailing" secondItem="O1u-W8-tvY" secondAttribute="trailing" id="tFS-0z-EIu"/>
+                            <constraint firstItem="q8I-QN-ZHe" firstAttribute="leading" secondItem="O1u-W8-tvY" secondAttribute="leading" id="u9P-NZ-OnI"/>
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="trailing" secondItem="O1u-W8-tvY" secondAttribute="trailing" id="yF9-CX-wCX"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="O1u-W8-tvY"/>
@@ -235,8 +319,10 @@
                         <outlet property="imgCheck" destination="IRB-FZ-Krg" id="yG1-75-Is7"/>
                         <outlet property="imgTopLogoBar" destination="l6a-PI-mfa" id="euI-aj-T5e"/>
                         <outlet property="imgTourImage" destination="TjP-PV-HJG" id="yqh-Da-dAx"/>
+                        <outlet property="lblGpsCoord" destination="q8I-QN-ZHe" id="yfP-eH-cz2"/>
                         <outlet property="lblTitle" destination="57f-4b-xkx" id="gcz-9N-Fm1"/>
                         <outlet property="txtTourInfo" destination="qam-ro-KCe" id="3zj-d3-bag"/>
+                        <outlet property="vStackJoyStick" destination="2UU-ea-gLl" id="iiZ-q5-945"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 /* =========================================================================
  The CCampusTour class is the central process to the CampusTour application.
@@ -61,8 +62,8 @@ class CCampusTour : NSObject {
      notificaiton argument is a gps_coord object.
      ======================================================================== */
     @objc func gotNewLocationFromLocationServices(_ notification: Notification){
-        let coord:gps_coord = notification.object as! gps_coord
-        print("got new location!", coord.toString())
+        let coord:CLLocation = notification.object as! CLLocation
+        print("got new location!", coord)
 
     }
     

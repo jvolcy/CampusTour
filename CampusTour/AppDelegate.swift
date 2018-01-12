@@ -7,9 +7,13 @@
 //
 
 import UIKit
+import CoreLocation
 
 //global campusTour object
 var campusTour:CCampusTour? = nil
+
+//global Latest GPS coordinates
+var latestGpsLocation = CLLocation()
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

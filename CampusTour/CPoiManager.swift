@@ -195,6 +195,45 @@ class CPoiManager {
         return nil
     }
 
+    
+    
+    /* =========================================================================
+     This searches for any POI with a video url that matches the supplied
+     string.  Note that this may not result in a unique answer as multiple
+     POIs may share the same video url.  The function returns nil if no
+     match is found.
+     ======================================================================== */
+    func getPoi(byVideoUrl:String) -> CPoi? {
+        /* search the pois in the POIs list and return the first one with
+         an ID that matches byID. */
+        for poi in POIs {
+            if poi.video_url == byVideoUrl {
+                return poi
+            }
+        }
+        //none was found; return nil
+        return nil
+    }
+
+    /* =========================================================================
+     This searches for any POI with an audio url that matches the supplied
+     string.  Note that this may not result in a unique answer as multiple
+     POIs may share the same audio url.  The function returns nil if no
+     match is found.
+     ======================================================================== */
+    func getPoi(byAudioUrl:String) -> CPoi? {
+        /* search the pois in the POIs list and return the first one with
+         an ID that matches byID. */
+        for poi in POIs {
+            if poi.audio_url == byAudioUrl {
+                return poi
+            }
+        }
+        //none was found; return nil
+        return nil
+    }
+
+    
 }   //CPoiManager clasas
 
 
