@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import CoreLocation
 
 /* =========================================================================
  ======================================================================== */
@@ -97,7 +97,7 @@ class CPoiManager {
                         //set latitude, logitude and radiusFT to 0 if they are nil
                         let latitude = Double(poiRecordFields[2]) ?? 0.0
                         let longitude = Double(poiRecordFields[3]) ?? 0.0
-                        let radiusFt = Double(poiRecordFields[4]) ?? 0.0
+                        let radiusInMeters = (Double(poiRecordFields[4]) ?? 0.0) * 0.3048   //convert to meters
                         let rtf_url = String(poiRecordFields[5])
                         let img_url = String(poiRecordFields[6])
                         let audio_url = String(poiRecordFields[7])
@@ -107,8 +107,8 @@ class CPoiManager {
                         let new_poi = CPoi()
                         new_poi.poiID = poiID
                         new_poi.title = title
-                        new_poi.coord = gps_coord(latitude:latitude, longitude:longitude)
-                        new_poi.radiusFt = radiusFt
+                        new_poi.coord = CLLocation(latitude:latitude, longitude:longitude)
+                        new_poi.radiusInMeters = radiusInMeters
                         new_poi.rtf_url = rtf_url
                         new_poi.img_url = img_url
                         new_poi.audio_url = audio_url
@@ -139,7 +139,7 @@ class CPoiManager {
     /* =========================================================================
      This function returns the closest POI that is in range of the supplied coordinates
      ======================================================================== */
-    func getNearestPoiInRange(coord:gps_coord) -> CPoi? {
+    func getNearestPoiInRange(coord:CLLocation) -> CPoi? {
         //find all POIs in range
         let poisInRange = getPoisInRange(coord: coord)
         
@@ -147,12 +147,12 @@ class CPoiManager {
             //Use minPoi and minDist as search indexes for finding the minimum distance
             //Initialize these appropriately for the search
             var minPoi = poisInRange[0] //assume the first POI is the closest
-            var minDist = poisInRange[0].radiusFt!   //start with a value guaranteed to be >= the min distance
+            var minDist = poisInRange[0].radiusInMeters!   //start with a value guaranteed to be >= the min distance
             
             //go through the list of POIs in range and find the minimum
             for poi in poisInRange {
                 //calculate the distance to the poi in the list
-                let dist = poi.distanceFrom(gpsCoord: coord)!
+                let dist = poi.coord.distance(from: coord)
                 if dist < minDist { //new min found
                     minDist = dist
                     minPoi = poi
@@ -167,7 +167,7 @@ class CPoiManager {
     /* =========================================================================
      Get a list of all POIs in range of the specified coordinates
      ======================================================================== */
-    func getPoisInRange(coord:gps_coord) -> [CPoi] {
+    func getPoisInRange(coord:CLLocation) -> [CPoi] {
         var poisInRange = [CPoi]()
         
         //traverse the list of POIs and find those in range

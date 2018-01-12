@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		062E7470200071AB003415BD /* gps_coord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062E746F200071AB003415BD /* gps_coord.swift */; };
 		062E74AC2001822F003415BD /* CPoi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062E74AB2001822F003415BD /* CPoi.swift */; };
 		0633BE061FFBC8760082C732 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE051FFBC8760082C732 /* AppDelegate.swift */; };
 		0633BE081FFBC8760082C732 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0633BE071FFBC8760082C732 /* HomeViewController.swift */; };
@@ -42,7 +41,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		062E746F200071AB003415BD /* gps_coord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = gps_coord.swift; sourceTree = "<group>"; };
 		062E74AB2001822F003415BD /* CPoi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPoi.swift; sourceTree = "<group>"; };
 		0633BE021FFBC8760082C732 /* CampusTour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampusTour.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0633BE051FFBC8760082C732 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,7 +114,6 @@
 				0633BE051FFBC8760082C732 /* AppDelegate.swift */,
 				068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */,
 				062E74AB2001822F003415BD /* CPoi.swift */,
-				062E746F200071AB003415BD /* gps_coord.swift */,
 				06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */,
 				068E72EC1FFF208800BC3E29 /* CCampusTour.swift */,
 				068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */,
@@ -285,7 +282,6 @@
 			files = (
 				068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */,
 				06C3956F1FFF3FB200651E5A /* CAVStreamer.swift in Sources */,
-				062E7470200071AB003415BD /* gps_coord.swift in Sources */,
 				068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */,
 				0633BE0A1FFBC8760082C732 /* TourViewController.swift in Sources */,
 				0633BE061FFBC8760082C732 /* AppDelegate.swift in Sources */,

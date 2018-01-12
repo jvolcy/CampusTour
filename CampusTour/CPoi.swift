@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import CoreLocation
 
 /* =========================================================================
  define a point of interest class.  This contains all the data about
@@ -29,8 +29,8 @@ class CPoi
     
     var poiID:String!
     var title:String!
-    var coord:gps_coord!
-    var radiusFt:Double!
+    var coord:CLLocation!
+    var radiusInMeters:Double!
     var rtf_url:String!
     var img_url:String!
     var audio_url:String!
@@ -45,11 +45,11 @@ class CPoi
     /* =========================================================================
      initializer
      ======================================================================== */
-    init(poiID:String, title:String, coord:gps_coord, radiusFt:Double, rtf_url:String, img_url:String, audio_url:String, video_url:String) {
+    init(poiID:String, title:String, coord:CLLocation, radiusFt:Double, rtf_url:String, img_url:String, audio_url:String, video_url:String) {
         self.poiID = poiID
         self.title = title
         self.coord = coord
-        self.radiusFt = radiusFt
+        self.radiusInMeters = radiusFt * 0.3048
         self.rtf_url = rtf_url
         self.img_url = img_url
         self.audio_url = audio_url
@@ -63,8 +63,8 @@ class CPoi
     func toString() ->String {
         let str = "poiID: \(poiID ?? "nil")\n" +
             "title: \(title ?? "nil")\n" +
-            "coord: (\(coord != nil ? "\(coord!.latitude!), \(coord!.longitude!)" : "nil"))\n" +
-            "radiusFt: \(radiusFt != nil ? "\(radiusFt!)" : "nil")\n" +
+            "coord: (\(coord.coordinate.latitude), \(coord.coordinate.longitude))\n" +
+            "radiusInMeters: \(radiusInMeters != nil ? "\(radiusInMeters!)" : "nil")\n" +
             "rtf_url: \(rtf_url ?? "nil")\n" +
             "img_url: \(img_url ?? "nil")\n" +
             "audio_url: \(audio_url ?? "nil")\n" +
@@ -73,28 +73,14 @@ class CPoi
         return str
     }
     
-    /* =========================================================================
-     calculate the distance from the poi
-     ======================================================================== */
-    func distanceFrom(gpsCoord:gps_coord) -> Double?
-    {
-        return calculateDistance(coord1: gpsCoord, coord2: coord)
-    }
 
+    
     /* =========================================================================
      calculate the distance from the poi
      ======================================================================== */
-    func isInRange(gpsCoord:gps_coord) -> Bool
+    func isInRange(gpsCoord:CLLocation) -> Bool
     {
-        //calculate and unwrap the distance from the provided GPS coord
-        if let dist = calculateDistance(coord1: gpsCoord, coord2: coord) {
-            //if the unwrapped distance is within range, return true, otherwise return false
-            return (dist <= radiusFt ? true : false)
-        }   //if let dist...
-        else {
-            //if the calculated distance is nil, return false
-            return false
-        }   //else
+        return coord.distance(from: gpsCoord) < radiusInMeters ? true : false
     }   //func isInRange( ...
 
     

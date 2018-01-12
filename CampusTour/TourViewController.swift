@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import CoreLocation
 
 class TourViewController: UIViewController {
 
@@ -140,8 +141,8 @@ class TourViewController: UIViewController {
 
     /* =========================================================================
      ======================================================================== */
-    func callback(coord:gps_coord)->(){
-        print("TourView callback: \(coord.toString())")
+    func callback(coord:CLLocation)->(){
+        print("TourView callback: \(coord)")
     }
 
     
