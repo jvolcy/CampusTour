@@ -20,7 +20,8 @@ class TourViewController: UIViewController {
     @IBOutlet var imgTourImage: UIImageView!    //central display of the tour view
     @IBOutlet weak var lblGpsCoord: UILabel!
     @IBOutlet weak var vStackJoyStick: UIStackView!
-    
+    @IBOutlet weak var viewTour: UIView!
+    @IBOutlet weak var imgMarker: UIImageView!
     
     /*HStackTitleAndCheck is a horizontal stack view that contais the title and
      check image at the top of the tour view.  Taken together, these 2 objects
@@ -98,6 +99,7 @@ class TourViewController: UIViewController {
         are no longer in proximity of the POI, its window should be
         removed.  Also, if the user clicks on map view, the window
         should be removed. */
+        avView?.removeFromSuperview()       //***TEMP
         /*
         if let poi = campusTour?.poiManager.getPoi(byVideoUrl: url) {
             if poi == campusTour?.poiManager.getNearestPoiInRange(coord: <#T##gps_coord#>) {
@@ -186,7 +188,7 @@ class TourViewController: UIViewController {
         default:
             image = UIImage(named: "pause")
             mediaState = .playing
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: imgTourImage)
+            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: viewTour /*imgTourImage*/)
             //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
             displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.rtf", targetView: txtTourInfo)
         }
@@ -390,6 +392,7 @@ class TourViewController: UIViewController {
     @IBAction func btnJoyMiddleTouchUpInside(_ sender: Any) {
         let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
         let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
+        setMarkerOnImageView(marker: imgMarker, targetView: imgTourImage, targetLocation: CGPoint(x:50, y:50))
     }
     
     /* =========================================================================

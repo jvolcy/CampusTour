@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="49e-Tb-3d3">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -130,9 +130,35 @@
                                             <constraint firstAttribute="trailing" secondItem="l6a-PI-mfa" secondAttribute="trailing" id="ipC-Jm-3r0"/>
                                         </constraints>
                                     </view>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
+                                    <view clipsSubviews="YES" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="i2u-Xl-FUP" userLabel="viewTour">
                                         <rect key="frame" x="0.0" y="70" width="375" height="352"/>
-                                    </imageView>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="PACKARD" translatesAutoresizingMaskIntoConstraints="NO" id="Y6e-OM-ZYe" userLabel="imgBuildings">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Marker1_50px" translatesAutoresizingMaskIntoConstraints="NO" id="c5s-mO-cMm" userLabel="imgMarker">
+                                                <rect key="frame" x="19" y="41" width="35" height="35"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="16" id="tQh-qe-XYT"/>
+                                                    <constraint firstAttribute="height" constant="16" id="vwR-9q-o4V"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.66422420739999999" green="0.66424006219999998" blue="0.66423153879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="TjP-PV-HJG" secondAttribute="bottom" id="CSd-Jn-dbV"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="bottom" secondItem="Y6e-OM-ZYe" secondAttribute="bottom" id="Cqj-UN-ckl"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="trailing" secondItem="Y6e-OM-ZYe" secondAttribute="trailing" id="FZH-oI-2bz"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="top" secondItem="Y6e-OM-ZYe" secondAttribute="top" id="X4T-8S-MOG"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="leading" secondItem="i2u-Xl-FUP" secondAttribute="leading" id="esi-e2-XuA"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="leading" secondItem="Y6e-OM-ZYe" secondAttribute="leading" id="nPz-Bx-Ewa"/>
+                                            <constraint firstAttribute="trailing" secondItem="TjP-PV-HJG" secondAttribute="trailing" id="rjL-AF-eIo"/>
+                                            <constraint firstItem="TjP-PV-HJG" firstAttribute="top" secondItem="i2u-Xl-FUP" secondAttribute="top" id="uVP-ob-jv6"/>
+                                        </constraints>
+                                    </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="KpR-Br-s7l" userLabel="hStackButtons">
                                         <rect key="frame" x="0.0" y="422" width="375" height="35"/>
                                         <subviews>
@@ -210,7 +236,9 @@
                                     </textView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="qam-ro-KCe" firstAttribute="height" secondItem="TjP-PV-HJG" secondAttribute="height" multiplier="0.4" id="DeQ-Gx-QCs"/>
+                                    <constraint firstItem="i2u-Xl-FUP" firstAttribute="leading" secondItem="Dlg-Hf-A1s" secondAttribute="leading" id="RPf-PK-cBF"/>
+                                    <constraint firstAttribute="trailing" secondItem="i2u-Xl-FUP" secondAttribute="trailing" id="pz2-jc-WKo"/>
+                                    <constraint firstItem="qam-ro-KCe" firstAttribute="height" secondItem="i2u-Xl-FUP" secondAttribute="height" multiplier="0.4" id="sE3-cl-EtQ"/>
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" alpha="0.59999999999999998" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="2UU-ea-gLl" userLabel="vStackJoyStick">
@@ -317,12 +345,14 @@
                         <outlet property="btnRewind" destination="Kbq-0Y-ftC" id="0iU-Qn-e96"/>
                         <outlet property="hStackTitleAndCheck" destination="oEZ-w9-E2T" id="VA1-EU-SGe"/>
                         <outlet property="imgCheck" destination="IRB-FZ-Krg" id="yG1-75-Is7"/>
+                        <outlet property="imgMarker" destination="c5s-mO-cMm" id="wIp-HW-VSJ"/>
                         <outlet property="imgTopLogoBar" destination="l6a-PI-mfa" id="euI-aj-T5e"/>
                         <outlet property="imgTourImage" destination="TjP-PV-HJG" id="yqh-Da-dAx"/>
                         <outlet property="lblGpsCoord" destination="q8I-QN-ZHe" id="yfP-eH-cz2"/>
                         <outlet property="lblTitle" destination="57f-4b-xkx" id="gcz-9N-Fm1"/>
                         <outlet property="txtTourInfo" destination="qam-ro-KCe" id="3zj-d3-bag"/>
                         <outlet property="vStackJoyStick" destination="2UU-ea-gLl" id="iiZ-q5-945"/>
+                        <outlet property="viewTour" destination="i2u-Xl-FUP" id="csl-G0-mwz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
@@ -427,6 +457,8 @@
     </scenes>
     <resources>
         <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1200" height="900"/>
+        <image name="Marker1_50px" width="50" height="50"/>
+        <image name="PACKARD" width="4538" height="3956"/>
         <image name="about" width="36" height="36"/>
         <image name="check_empty" width="256" height="256"/>
         <image name="default_arch" width="645" height="462"/>
