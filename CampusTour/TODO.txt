@@ -1,0 +1,22 @@
+
+- poi status needs to be stored on the individual devices (core data)
+
+- version #s need to be added with a corresponding label in the "About" view
+
+- currently works with mp4 and rtf only.  Support for jpg and mp3 is needed.  The envisioned implementation is as follows:
+1) the rtf is required.  load it and display it.  do nothing if it is not found.
+2) search for an mp4.  If one is found, play it.  We're done.
+3) if no mp4 is found, look for a jpg.  If it is found display it.  Otherwise, display a default photo.
+4) look for an mp3.  If one is found, play it.
+
+
+- poi status needs to be implemented:
+1) initially, all poi have a status of "NotVisited"
+2) once media for a poi begins to play, that poi should be marked as "Visited"
+3) when the media finishes playing, the poi should be marked as "Completed"
+
+- the checkmark graphic needs to reflect the poi status
+
+- stub files for JPG, RTF and MP3 needed
+
+- experiment with gesture recognizers to make images clickable.  Or, possibly change images to buttons with embedded images (how would we know where on the button the click occurred?)

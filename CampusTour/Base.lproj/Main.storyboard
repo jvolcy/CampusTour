@@ -103,7 +103,7 @@
                                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check_empty" translatesAutoresizingMaskIntoConstraints="NO" id="IRB-FZ-Krg" userLabel="imgCheck">
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="status_not_visited" translatesAutoresizingMaskIntoConstraints="NO" id="IRB-FZ-Krg" userLabel="imgCheck">
                                                         <rect key="frame" x="305" y="0.0" width="70" height="70"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="70" id="UjY-tb-Brh"/>
@@ -465,7 +465,6 @@
         <image name="Marker1_50px" width="50" height="50"/>
         <image name="PACKARD" width="4538" height="3956"/>
         <image name="about" width="36" height="36"/>
-        <image name="check_empty" width="256" height="256"/>
         <image name="default_arch" width="645" height="462"/>
         <image name="greyButton" width="10" height="10"/>
         <image name="home" width="36" height="36"/>
@@ -475,6 +474,7 @@
         <image name="play" width="256" height="256"/>
         <image name="restart" width="256" height="256"/>
         <image name="rewind" width="256" height="256"/>
+        <image name="status_not_visited" width="256" height="256"/>
         <image name="tour" width="36" height="36"/>
     </resources>
 </document>

@@ -20,6 +20,7 @@
 		068E72E91FFEF4E900BC3E29 /* CPoiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */; };
 		068E72EB1FFEF4FF00BC3E29 /* CCTLocationServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */; };
 		068E72ED1FFF208800BC3E29 /* CCampusTour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E72EC1FFF208800BC3E29 /* CCampusTour.swift */; };
+		06AE9F79200A12E100E48105 /* TODO.txt in Resources */ = {isa = PBXBuildFile; fileRef = 06AE9F78200A12E100E48105 /* TODO.txt */; };
 		06C3956F1FFF3FB200651E5A /* CAVStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,7 @@
 		068E72E81FFEF4E900BC3E29 /* CPoiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPoiManager.swift; sourceTree = "<group>"; };
 		068E72EA1FFEF4FF00BC3E29 /* CCTLocationServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCTLocationServices.swift; sourceTree = "<group>"; };
 		068E72EC1FFF208800BC3E29 /* CCampusTour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCampusTour.swift; sourceTree = "<group>"; };
+		06AE9F78200A12E100E48105 /* TODO.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		06C3956E1FFF3FB100651E5A /* CAVStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAVStreamer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +126,7 @@
 				0633BE0E1FFBC8760082C732 /* Assets.xcassets */,
 				0633BE101FFBC8760082C732 /* LaunchScreen.storyboard */,
 				0633BE131FFBC8760082C732 /* Info.plist */,
+				06AE9F78200A12E100E48105 /* TODO.txt */,
 			);
 			path = CampusTour;
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06AE9F79200A12E100E48105 /* TODO.txt in Resources */,
 				0633BE121FFBC8760082C732 /* LaunchScreen.storyboard in Resources */,
 				0633BE0F1FFBC8760082C732 /* Assets.xcassets in Resources */,
 				0633BE0D1FFBC8760082C732 /* Main.storyboard in Resources */,

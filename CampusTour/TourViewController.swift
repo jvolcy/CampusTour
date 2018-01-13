@@ -170,7 +170,7 @@ class TourViewController: UIViewController {
                 imgBuildings.isHidden = false
             }
             lblTitle.text = poi!.title
-            imgCheck.image = UIImage(named:"check_empty")
+            imgCheck.image = UIImage(named:"status_visited")
             displayTopLogo(coverTitleAndCheck: false)
         }
         else {
@@ -196,7 +196,8 @@ class TourViewController: UIViewController {
         /* we need to be able to lookup a POI by its media URL.  If we
         are no longer in proximity of the POI, its window should be
         removed.  Also, if the user clicks on map view, the window
-        should be removed. */
+        should be removed.  Finally, the poi needs to be narked as
+        "Completed". */
         avView?.removeFromSuperview()       //***TEMP
         mediaState = .stopped
         /*
@@ -516,11 +517,13 @@ class TourViewController: UIViewController {
     }   //func
     
     /* =========================================================================
+     rewind 10 seconds
      ======================================================================== */
     @IBAction func btnRewindTouchUpInside(_ sender: Any) {
     }
     
     /* =========================================================================
+     re-play from the beginning
      ======================================================================== */
     @IBAction func btnRePlayTouchUpInside(_ sender: Any) {
         AVStreamer.replay()

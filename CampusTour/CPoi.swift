@@ -24,6 +24,7 @@ class CPoi
     enum EPoiStatus {
         case NotVisited
         case Visited
+        case Completed
         case Other
     }
     
