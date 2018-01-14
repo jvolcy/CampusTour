@@ -16,6 +16,7 @@ class TourViewController: UIViewController {
     @IBOutlet weak var txtTourInfo: UITextView! //main tour information attributed text display
     @IBOutlet weak var btnMap: UIButton!
     @IBOutlet weak var btnPlayPause: UIButton!
+    @IBOutlet weak var btnGpsOnOff: UIButton!
     @IBOutlet weak var btnRePlay: UIButton!
     @IBOutlet weak var btnRewind: UIButton!
     @IBOutlet var imgTourImage: UIImageView!    //central display of the tour view
@@ -106,6 +107,7 @@ class TourViewController: UIViewController {
         btnRePlay.imageView?.contentMode = .scaleAspectFit
         btnRewind.imageView?.contentMode = .scaleAspectFit
         btnMap.imageView?.contentMode = .scaleAspectFit
+        btnGpsOnOff.imageView?.contentMode = .scaleAspectFit
         
         //default to logo display
         displayTopLogo(coverTitleAndCheck: true)

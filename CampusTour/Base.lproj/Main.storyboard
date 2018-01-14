@@ -168,28 +168,32 @@
                                         <rect key="frame" x="0.0" y="422" width="375" height="35"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjH-2b-6RD" userLabel="btnMap">
-                                                <rect key="frame" x="0.0" y="0.0" width="94" height="35"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="map" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnMapTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="nix-Tr-6OH"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kxm-PF-ti2" userLabel="btnGpsOnOff">
+                                                <rect key="frame" x="75" y="0.0" width="75" height="35"/>
+                                                <state key="normal" image="gps_off" backgroundImage="greyButton"/>
+                                            </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="duE-Tu-y1W" userLabel="btnPlayPause">
-                                                <rect key="frame" x="94" y="0.0" width="93.5" height="35"/>
+                                                <rect key="frame" x="150" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="play" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnPlayPauseTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="1ce-TO-hJY"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kbq-0Y-ftC" userLabel="btnRewind">
-                                                <rect key="frame" x="187.5" y="0.0" width="94" height="35"/>
+                                                <rect key="frame" x="225" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="rewind" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnRewindTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="Pb8-NO-77t"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdW-c5-b2h" userLabel="btnRePlay">
-                                                <rect key="frame" x="281.5" y="0.0" width="93.5" height="35"/>
+                                                <rect key="frame" x="300" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="restart" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnRePlayTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="SUa-Ps-evK"/>
@@ -197,6 +201,7 @@
                                             </button>
                                         </subviews>
                                         <constraints>
+                                            <constraint firstItem="Kxm-PF-ti2" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="94e-km-TXw"/>
                                             <constraint firstItem="duE-Tu-y1W" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="Hkf-rl-gkY"/>
                                             <constraint firstItem="BjH-2b-6RD" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="fAc-Ae-fWw"/>
                                             <constraint firstItem="vdW-c5-b2h" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="xXS-fV-BvR"/>
@@ -338,11 +343,17 @@
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="trailing" secondItem="O1u-W8-tvY" secondAttribute="trailing" id="yF9-CX-wCX"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="O1u-W8-tvY"/>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="2UU-ea-gLl"/>
+                            </mask>
+                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tour" selectedImage="tour" id="cPa-gy-q4n" userLabel="Tour">
                         <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-12"/>
                     </tabBarItem>
                     <connections>
+                        <outlet property="btnGpsOnOff" destination="Kxm-PF-ti2" id="5vR-cn-PYa"/>
                         <outlet property="btnMap" destination="BjH-2b-6RD" id="5xd-CY-wtw"/>
                         <outlet property="btnPlayPause" destination="duE-Tu-y1W" id="Kdz-Dj-xMG"/>
                         <outlet property="btnRePlay" destination="vdW-c5-b2h" id="CEf-SR-R1c"/>
@@ -466,6 +477,7 @@
         <image name="PACKARD" width="4538" height="3956"/>
         <image name="about" width="36" height="36"/>
         <image name="default_arch" width="645" height="462"/>
+        <image name="gps_off" width="418" height="158"/>
         <image name="greyButton" width="10" height="10"/>
         <image name="home" width="36" height="36"/>
         <image name="il_logo" width="771" height="261"/>
