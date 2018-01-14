@@ -104,15 +104,14 @@ class CPoiManager {
                         let video_url = String(poiRecordFields[8])
                         
                         //build the poi object
-                        let new_poi = CPoi()
-                        new_poi.poiID = poiID
-                        new_poi.title = title
-                        new_poi.coord = CLLocation(latitude:latitude, longitude:longitude)
-                        new_poi.radiusInMeters = radiusInMeters
-                        new_poi.rtf_url = rtf_url
-                        new_poi.img_url = img_url
-                        new_poi.audio_url = audio_url
-                        new_poi.video_url = video_url
+                        let new_poi = CPoi(poiID: poiID,
+                                           title: title,
+                                           coord: CLLocation(latitude:latitude, longitude:longitude),
+                                           radiusInMeters: radiusInMeters,
+                                           rtf_url: rtf_url,
+                                           img_url: img_url,
+                                           audio_url: audio_url,
+                                           video_url: video_url)
                         
                         POIs.append(new_poi)    //add the poi to the POIs array
                     }   //if poiRecordFields[0][poiRecordFields[0].startIndex] != "#"

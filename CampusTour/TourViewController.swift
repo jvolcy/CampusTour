@@ -80,8 +80,7 @@ class TourViewController: UIViewController {
     //---------- joystick controls constants ----------
     let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
     let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
-    
-
+        
     /* =========================================================================
      ======================================================================== */
     override func viewDidLoad() {
@@ -163,12 +162,11 @@ class TourViewController: UIViewController {
             
             let locationInTargetImg = CGPoint(x: locationInTargetImgFrame.x - targetImgOrigin.x, y:locationInTargetImgFrame.y - targetImgOrigin.y)
             
-            //print("$$$$", locationInTargetImg)
             let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
             latestGpsLocation =  coord
             setMarker(coord: coord)
             
-            print("$$$$ (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
+            //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         }
     }
     
@@ -190,7 +188,6 @@ class TourViewController: UIViewController {
             print("\(poi.poiID!) distance=\(poi.coord.distance(from: coord)) meters.")
         }
         */
-        print("$", terminator:"")
 
         //do not update the map if media is paused or playing
         //this prevents the building layer being overlayed on
@@ -199,6 +196,10 @@ class TourViewController: UIViewController {
         
         let poi = campusTour?.poiManager.getNearestPoiInRange(coord: coord)
         if poi != nil {
+            //display the rich text
+            txtTourInfo.attributedText = poi!.richText
+            //displayAttributedTextFromURL(rtfFileUrl: poi!.rtf_url, targetView: txtTourInfo)
+            
             //select the building layer with the name that mathes the poiID
             //don't only update the buildings layer if we are in map mode
             if tourMode == .map{

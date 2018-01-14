@@ -37,26 +37,62 @@ class CPoi
     var audio_url:String!
     var video_url:String!
     var status = EPoiStatus.NotVisited
+    var richText:NSAttributedString? = nil
     
     //default initializer does nothing
+    /*
     init(){
         status = .NotVisited
     }
+     */
     
     /* =========================================================================
      initializer
      ======================================================================== */
-    init(poiID:String, title:String, coord:CLLocation, radiusFt:Double, rtf_url:String, img_url:String, audio_url:String, video_url:String) {
+    init(poiID:String, title:String, coord:CLLocation, radiusInMeters:Double, rtf_url:String, img_url:String, audio_url:String, video_url:String) {
         self.poiID = poiID
         self.title = title
         self.coord = coord
-        self.radiusInMeters = radiusFt * 0.3048
+        self.radiusInMeters = radiusInMeters
         self.rtf_url = rtf_url
         self.img_url = img_url
         self.audio_url = audio_url
         self.video_url = video_url
         status = .NotVisited
+        
+        //load the RTF data
+        loadRtfData()
     }
+    
+    
+    /* =========================================================================
+     this function attempts to load the RTF data from the provided rtf_url
+     ======================================================================== */
+    func loadRtfData() {
+        //extract the data from the POI file and create an array of POIs.
+        richText = nil  //set a default value
+        
+        if let url = URL(string: rtf_url) {
+            do {
+                //read the data from the rtf file
+                let data = try Data(contentsOf: url)
+                
+                //convert the data into an atrributed string
+                richText = try NSAttributedString(data: data, options: [:], documentAttributes: nil)
+
+            }   //do
+            catch {
+                // contents could not be loaded
+                print("could not read contents of \(rtf_url)")
+            }
+        }   // if let url = URL(string:
+        else {
+            // the URL was bad!
+            print("bad URL for \(rtf_url)")
+        }
+        
+    }
+    
     
     /* =========================================================================
      String formatting of CPoi

@@ -19,4 +19,8 @@
 
 - stub files for JPG, RTF and MP3 needed
 
-- experiment with gesture recognizers to make images clickable.  Or, possibly change images to buttons with embedded images (how would we know where on the button the click occurred?)
+- must pre-load POI RTFs to make map navigation fast.
+
+- joystick controls should disappear when we are not in debug mode
+
+- need to create some hidden way to switch to debug mode
