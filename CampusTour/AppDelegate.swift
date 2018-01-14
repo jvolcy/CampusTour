@@ -15,6 +15,13 @@ var campusTour:CCampusTour? = nil
 //global Latest GPS coordinates
 var latestGpsLocation = CLLocation()
 
+//global base URL and for CT data
+let CtDataBaseUrl = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/"
+
+//filename for poi index data
+let CtPoiIndexFilename = "scct_poi.tsv"
+
+
 /* SCCT_DebugMode is a global boolean that switches between running in debug
  mode and regular mode.  In debug mode, the global GPS locations,
  latestGpsLocation, are simulated through the use of a virtual joystick. */
@@ -29,8 +36,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        print("application didFinishLaunchingWithOptions")
-        campusTour=CCampusTour()
+        //print("CFBundleVersion", Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
+        //print("CFBundleShortVersionString", Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
+        campusTour=CCampusTour(CtDataBaseUrl:CtDataBaseUrl, CtPoiIndexFilename:CtPoiIndexFilename)
         return true
     }
 

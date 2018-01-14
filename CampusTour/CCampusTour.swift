@@ -9,6 +9,7 @@
 import Foundation
 import CoreLocation
 
+
 /* =========================================================================
  The CCampusTour class is the central process to the CampusTour application.
  It coordinates the LocationServices, PoiManager and AVStreamer to
@@ -16,17 +17,18 @@ import CoreLocation
  ======================================================================== */
 class CCampusTour : NSObject {
     
+    
     var ctLocationServices : CCTLocationServices!
     var poiManager : CPoiManager!
     
-    override init(){
+    init(CtDataBaseUrl: String, CtPoiIndexFilename:String){
         super.init()
         
         //instantiate the GPS lcoations services
         ctLocationServices = CCTLocationServices(updateIntervalSec:2.0)
         
         //instantiate the POI manager
-        poiManager = CPoiManager()
+        poiManager = CPoiManager(CtDataBaseUrl:CtDataBaseUrl, CtPoiIndexFilename:CtPoiIndexFilename)
         
         /* sign up for notification from location services.  This notification
          is a custom notification that tell us that a newly update GPS

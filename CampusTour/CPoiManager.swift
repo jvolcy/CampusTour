@@ -26,21 +26,34 @@ class CPoiManager {
      4          Double  LONGITUDE = GPS longitude
      5          Double  RADISU_FT = the radius (in feet) from the POI where it is considered to be "in range"
      6          String  URL = the URL for the media content associated with the POI*/
-    private let CT_POI_FILE = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/scct_poi.tsv"
     
     
     // The POIs array is an array of poi structures.  Each structure contains all the data outlined above for each POI
     //(POI_ID, TITLE, DESC, LATITUDE, LONGITUDE, RADIUS_FT, URL)
     var POIs = [CPoi]()
     //var POIs = [(POI_ID:String, TITLE:String, DESC:String, LATITUDE:Double, LONGITUDE:Double, RADIUS_FT:Double, URL:String)]()
-
+    
+    //base URL for all data
+    var CtDataBaseUrl:String!
+    
+    //filename of the POI index file
+    var CtPoiIndexFilename:String!
+    
+    //full URL of the POI index file
+    var CtPoiIndexFile:String!
     
     /* =========================================================================
      The initializer will open the POI file and load its contents into the POIs array
      ======================================================================== */
-    init () {
+    init (CtDataBaseUrl:String, CtPoiIndexFilename:String) {
+        self.CtDataBaseUrl = CtDataBaseUrl
+        self.CtPoiIndexFilename = CtPoiIndexFilename
+        
+        //compose the full URL of the POI index file
+        CtPoiIndexFile = CtDataBaseUrl+CtPoiIndexFilename
+        
         //extract the data from the POI file and create an array of POIs.
-        if let url = URL(string: CT_POI_FILE) {
+        if let url = URL(string: CtPoiIndexFile) {
             do {
                 let contents = try String(contentsOf: url, encoding:.ascii)
                 
@@ -98,12 +111,69 @@ class CPoiManager {
                         let latitude = Double(poiRecordFields[2]) ?? 0.0
                         let longitude = Double(poiRecordFields[3]) ?? 0.0
                         let radiusInMeters = (Double(poiRecordFields[4]) ?? 0.0) * 0.3048   //convert to meters
-                        let rtf_url = String(poiRecordFields[5])
-                        let img_url = String(poiRecordFields[6])
-                        let audio_url = String(poiRecordFields[7])
-                        let video_url = String(poiRecordFields[8])
+                        var rtf_url = String(poiRecordFields[5])
+                        var img_url = String(poiRecordFields[6])
+                        var audio_url = String(poiRecordFields[7])
+                        var video_url = String(poiRecordFields[8])
                         
-                        //build the poi object
+                        /* Here, we append the the filename to the base URL to
+                         create full URL names for the rtf, jpg, mp3 and mp4
+                         files.  The special cases of DEFAULT and NONE are
+                         handled here. */
+                        
+                        //compose the RTF URL
+                        switch rtf_url {
+                        case "DEFAULT":
+                            //for this case, use the POI_ID as the filename
+                            rtf_url = CtDataBaseUrl + poiID + ".rtf"
+                        case "NONE":
+                            //for this case, leave the url as "NONE"
+                            break
+                        default:
+                            //for all other cases, append the supplied filename to the base URL
+                            rtf_url = CtDataBaseUrl + rtf_url
+                        }
+                        
+                        //compose the JPG URL
+                        switch img_url {
+                        case "DEFAULT":
+                            //for this case, use the POI_ID as the filename
+                            img_url = CtDataBaseUrl + poiID + ".jpg"
+                        case "NONE":
+                            //for this case, leave the url as "NONE"
+                            break
+                        default:
+                            //for all other cases, append the supplied filename to the base URL
+                            img_url = CtDataBaseUrl + img_url
+                        }
+                        
+                        //compose the MP3 URL
+                        switch audio_url {
+                        case "DEFAULT":
+                            //for this case, use the POI_ID as the filename
+                            audio_url = CtDataBaseUrl + poiID + ".mp3"
+                        case "NONE":
+                            //for this case, leave the url as "NONE"
+                            break
+                        default:
+                            //for all other cases, append the supplied filename to the base URL
+                            audio_url = CtDataBaseUrl + audio_url
+                        }
+                        
+                        //compose the MP4 URL
+                        switch video_url {
+                        case "DEFAULT":
+                            //for this case, use the POI_ID as the filename
+                            video_url = CtDataBaseUrl + poiID + ".mp4"
+                        case "NONE":
+                            //for this case, leave the url as "NONE"
+                            break
+                        default:
+                            //for all other cases, append the supplied filename to the base URL
+                            video_url = CtDataBaseUrl + video_url
+                        }
+
+                        //build the poi object using the full URLs
                         let new_poi = CPoi(poiID: poiID,
                                            title: title,
                                            coord: CLLocation(latitude:latitude, longitude:longitude),
@@ -120,12 +190,12 @@ class CPoiManager {
             }   //do
             catch {
                 // contents could not be loaded
-                print("could not read contents of \(CT_POI_FILE)")
+                print("could not read contents of \(CtPoiIndexFile)")
             }
         }   // if let url = URL(string:
         else {
             // the URL was bad!
-            print("bad URL for \(CT_POI_FILE)")
+            print("bad URL for \(CtPoiIndexFile)")
         }
         
         /*for poi in POIs {
@@ -133,6 +203,7 @@ class CPoiManager {
         }
         */
     }   //init()
+    
     
     
     /* =========================================================================

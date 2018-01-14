@@ -24,3 +24,5 @@
 - joystick controls should disappear when we are not in debug mode
 
 - need to create some hidden way to switch to debug mode
+
+- turn the map button to a stop button when media is playing

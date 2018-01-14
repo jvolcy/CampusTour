@@ -168,6 +168,7 @@ class TourViewController: UIViewController {
             latestGpsLocation =  coord
             setMarker(coord: coord)
             
+            processNewLocation(coord: coord)
             //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         }
     }
@@ -181,9 +182,15 @@ class TourViewController: UIViewController {
         let coord:CLLocation = notification.object as! CLLocation
         //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
         print("$", terminator:"")
+        processNewLocation(coord: coord)
+    }
+    
+    /* =========================================================================
+     ======================================================================== */
+    func processNewLocation(coord:CLLocation) {
         setMarker(coord: coord)
         
-        let poisInRange = campusTour?.poiManager.getPoisInRange(coord: coord)
+        //let poisInRange = campusTour?.poiManager.getPoisInRange(coord: coord)
         //print("#poisInRange = \(poisInRange?.count)")
         /*
         for poi in poisInRange! {
@@ -341,9 +348,9 @@ class TourViewController: UIViewController {
         default:
             image = UIImage(named: "pause")
             mediaState = .playing
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp4", outputView: viewTour /*imgTourImage*/)
+            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.mp4", outputView: viewTour /*imgTourImage*/)
             //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
-            displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.rtf", targetView: txtTourInfo)
+            displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.rtf", targetView: txtTourInfo)
         }
 
         btnPlayPause.setImage(image, for: .normal)

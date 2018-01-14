@@ -16,7 +16,7 @@ class AboutViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/about.rtf", targetView: txtAboutInfo)
+        displayAttributedTextFromURL(rtfFileUrl: CtDataBaseUrl+"about.rtf", targetView: txtAboutInfo)
     }
 
 

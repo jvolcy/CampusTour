@@ -167,16 +167,16 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="KpR-Br-s7l" userLabel="hStackButtons">
                                         <rect key="frame" x="0.0" y="422" width="375" height="35"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjH-2b-6RD" userLabel="btnMap">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kxm-PF-ti2" userLabel="btnGpsOnOff">
                                                 <rect key="frame" x="0.0" y="0.0" width="75" height="35"/>
+                                                <state key="normal" image="gps_on" backgroundImage="greyButton"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjH-2b-6RD" userLabel="btnMap">
+                                                <rect key="frame" x="75" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="map" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnMapTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="nix-Tr-6OH"/>
                                                 </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kxm-PF-ti2" userLabel="btnGpsOnOff">
-                                                <rect key="frame" x="75" y="0.0" width="75" height="35"/>
-                                                <state key="normal" image="gps_off" backgroundImage="greyButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="duE-Tu-y1W" userLabel="btnPlayPause">
                                                 <rect key="frame" x="150" y="0.0" width="75" height="35"/>
@@ -209,7 +209,7 @@
                                             <constraint firstItem="Kbq-0Y-ftC" firstAttribute="height" secondItem="KpR-Br-s7l" secondAttribute="height" id="ytd-Da-07O"/>
                                         </constraints>
                                     </stackView>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qam-ro-KCe" userLabel="txtTourInfo">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qam-ro-KCe" userLabel="txtTourInfo">
                                         <rect key="frame" x="0.0" y="457" width="375" height="141"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <attributedString key="attributedText">
@@ -477,7 +477,7 @@
         <image name="PACKARD" width="4538" height="3956"/>
         <image name="about" width="36" height="36"/>
         <image name="default_arch" width="645" height="462"/>
-        <image name="gps_off" width="418" height="158"/>
+        <image name="gps_on" width="385" height="159"/>
         <image name="greyButton" width="10" height="10"/>
         <image name="home" width="36" height="36"/>
         <image name="il_logo" width="771" height="261"/>
