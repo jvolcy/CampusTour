@@ -93,6 +93,7 @@
 		0633BDF91FFBC8760082C732 = {
 			isa = PBXGroup;
 			children = (
+				06AE9F78200A12E100E48105 /* TODO.txt */,
 				0633BE041FFBC8760082C732 /* CampusTour */,
 				0633BE1B1FFBC8760082C732 /* CampusTourTests */,
 				0633BE261FFBC8760082C732 /* CampusTourUITests */,
@@ -126,7 +127,6 @@
 				0633BE0E1FFBC8760082C732 /* Assets.xcassets */,
 				0633BE101FFBC8760082C732 /* LaunchScreen.storyboard */,
 				0633BE131FFBC8760082C732 /* Info.plist */,
-				06AE9F78200A12E100E48105 /* TODO.txt */,
 			);
 			path = CampusTour;
 			sourceTree = "<group>";

@@ -81,11 +81,9 @@ class TourViewController: UIViewController {
     let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
     let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
     
-    
+
     /* =========================================================================
-     (540, 454) -> 33.746832, -84.413719
-     
-     (3551, 2631) -> 33.744402, -84.409692     ======================================================================== */
+     ======================================================================== */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -113,6 +111,15 @@ class TourViewController: UIViewController {
         //default to logo display
         displayTopLogo(coverTitleAndCheck: true)
         
+        //add a tap gesture recognizer to the building image
+        let imgBuildingGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleImgBuildingsTap(recognizer:)))
+        
+        imgBuildings.addGestureRecognizer(imgBuildingGestureRecognizer)
+        imgBuildingGestureRecognizer.numberOfTapsRequired = 1
+        imgBuildingGestureRecognizer.numberOfTouchesRequired = 1
+        imgBuildings.isUserInteractionEnabled = true
+
+        
         /* register for notification when an AVPalerItem has finished playing.  Note that
          notification will not be sent if the player is stopped.  We will use the
          default application notification center*/
@@ -128,6 +135,9 @@ class TourViewController: UIViewController {
                             selector: #selector(gotNewLocationFromLocationServices(_:)),
                             name: locationServicesUpdatedLocations,
                             object: nil);
+        
+        
+        
     }
     
     /* =========================================================================
@@ -137,6 +147,31 @@ class TourViewController: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    
+    /* =========================================================================
+     Thss is the gesture recognizer for the buildings image
+     ======================================================================== */
+    @objc func handleImgBuildingsTap(recognizer: UITapGestureRecognizer) {
+        //react only when the tap ends
+        if recognizer.state == .ended {
+            //the location in the image target frame is returned by handleImgBuildingsTap
+            let locationInTargetImgFrame = recognizer.location(in: imgBuildings /*recognizer.view*/)
+            
+            //now we need the offset of the image in the frame
+            let targetImgOrigin = getImageOffsetInImageView(imageView: imgBuildings /*recognizer.view as! UIImageView*/)
+            
+            let locationInTargetImg = CGPoint(x: locationInTargetImgFrame.x - targetImgOrigin.x, y:locationInTargetImgFrame.y - targetImgOrigin.y)
+            
+            //print("$$$$", locationInTargetImg)
+            let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
+            latestGpsLocation =  coord
+            setMarker(coord: coord)
+            
+            print("$$$$ (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
+        }
+    }
+    
 
     /* =========================================================================
      newly updated GPS coordinate notifications callback function.  The
@@ -155,6 +190,7 @@ class TourViewController: UIViewController {
             print("\(poi.poiID!) distance=\(poi.coord.distance(from: coord)) meters.")
         }
         */
+        print("$", terminator:"")
 
         //do not update the map if media is paused or playing
         //this prevents the building layer being overlayed on
@@ -167,7 +203,14 @@ class TourViewController: UIViewController {
             //don't only update the buildings layer if we are in map mode
             if tourMode == .map{
                 imgBuildings.image = UIImage(named:poi!.poiID)
-                imgBuildings.isHidden = false
+                
+                /* for non-building POIs, there will not be a
+                 corresponding building image.  In such cases, the
+                 assignment above will result in a nil building image.
+                 Reset it here to the blank image "NONE". */
+                if imgBuildings.image == nil {
+                    imgBuildings.image = UIImage(named:"NONE")
+                }
             }
             lblTitle.text = poi!.title
             imgCheck.image = UIImage(named:"status_visited")
@@ -175,7 +218,7 @@ class TourViewController: UIViewController {
         }
         else {
             //if we are not near a POI, turn off the building layer
-            imgBuildings.isHidden = true
+            imgBuildings.image = UIImage(named:"NONE")
             displayTopLogo(coverTitleAndCheck: true)
         }
         
@@ -335,11 +378,8 @@ class TourViewController: UIViewController {
     }
 
     /* =========================================================================
-     static let CAMPUS_TOP_LATITUDE = 33.747151
-     static let CAMPUS_BOTTOM_LATITUDE = 33.743234
-     static let CAMPUS_LEFT_LONGITUDE = -84.414763
-     static let CAMPUS_RIGHT_LONGITUDE = -84.408572
-
+     This function converts gps coordinates to image point coordinates
+     for the image in imgTourImage
      ======================================================================== */
     func gpsCoordToPoints(coord:CLLocation) -> CGPoint {
         //get the top, bottom, left and right pixel coordinates of the image
@@ -349,19 +389,38 @@ class TourViewController: UIViewController {
         let imageRight = Double(imagePointSize.width-1)
         let imageBottom = Double(imagePointSize.height-1)
         
-        //print(imageLeft, coord.coordinate.longitude, (imageRight - imageLeft), (TourViewController.CAMPUS_RIGHT_LONGITUDE-TourViewController.CAMPUS_LEFT_LONGITUDE))
-        //print(imageTop, coord.coordinate.longitude, (imageBottom - imageTop), (TourViewController.CAMPUS_BOTTOM_LATITUDE-TourViewController.CAMPUS_TOP_LATITUDE))
-
         //interpolate x
         let x = imageLeft + (coord.coordinate.longitude-TourViewController.CAMPUS_LEFT_LONGITUDE) * (imageRight - imageLeft)/(TourViewController.CAMPUS_RIGHT_LONGITUDE-TourViewController.CAMPUS_LEFT_LONGITUDE)
         
         //interpolate y
         let y = imageTop + (coord.coordinate.latitude-TourViewController.CAMPUS_TOP_LATITUDE) * (imageBottom - imageTop)/(TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)
         
-        print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
+        //print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
         return CGPoint(x:x, y:y)
     }
     
+    /* =========================================================================
+     This function converts image point coordinates to gps coordinates
+     for the image in imgTourImage
+     ======================================================================== */
+    func pointsToGpsCoord(imgPointCoord:CGPoint) -> CLLocation {
+        //get the top, bottom, left and right pixel coordinates of the image
+        let imagePointSize = getImagePointSizeInImageView(imageView: imgTourImage)
+        let imageLeft = 0.0
+        let imageTop = 0.0
+        let imageRight = Double(imagePointSize.width-1)
+        let imageBottom = Double(imagePointSize.height-1)
+        
+        //interpolate longitude (x)
+        let slopex = (TourViewController.CAMPUS_RIGHT_LONGITUDE - TourViewController.CAMPUS_LEFT_LONGITUDE)/(imageRight - imageLeft)
+        let lon = TourViewController.CAMPUS_LEFT_LONGITUDE + (Double(imgPointCoord.x) - imageLeft) * slopex
+        
+        let slopey = (TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)/(imageBottom - imageTop)
+        let lat = TourViewController.CAMPUS_TOP_LATITUDE + (Double(imgPointCoord.y) - imageTop) * slopey
+        
+        //print("(\(imgPointCoord.x), \(imgPointCoord.y)) -> (\(lat)), \(lon)")
+        return CLLocation(latitude: lat, longitude: lon)
+    }
     
     /* =========================================================================
      function that draws the marker on the image.  The location of the marker
