@@ -29,7 +29,7 @@
                                     <constraint firstAttribute="height" constant="130" id="rGS-Qo-f1C"/>
                                 </constraints>
                             </imageView>
-                            <pickerView alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nba-9A-znf" userLabel="pikTourChoice">
+                            <pickerView hidden="YES" alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nba-9A-znf" userLabel="pikTourChoice">
                                 <rect key="frame" x="30.5" y="289" width="315" height="90"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -141,7 +141,7 @@
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
                                             </imageView>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="PACKARD" translatesAutoresizingMaskIntoConstraints="NO" id="Y6e-OM-ZYe" userLabel="imgBuildings">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NONE" translatesAutoresizingMaskIntoConstraints="NO" id="Y6e-OM-ZYe" userLabel="imgBuildings">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
                                             </imageView>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Marker1_50px" translatesAutoresizingMaskIntoConstraints="NO" id="c5s-mO-cMm" userLabel="imgMarker">
@@ -170,6 +170,9 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kxm-PF-ti2" userLabel="btnGpsOnOff">
                                                 <rect key="frame" x="0.0" y="0.0" width="75" height="35"/>
                                                 <state key="normal" image="gps_on" backgroundImage="greyButton"/>
+                                                <connections>
+                                                    <action selector="btnGpsOnOffTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="lUM-1f-VZ3"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjH-2b-6RD" userLabel="btnMap">
                                                 <rect key="frame" x="75" y="0.0" width="75" height="35"/>
@@ -194,7 +197,7 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdW-c5-b2h" userLabel="btnRePlay">
                                                 <rect key="frame" x="300" y="0.0" width="75" height="35"/>
-                                                <state key="normal" title="Button" image="restart" backgroundImage="greyButton"/>
+                                                <state key="normal" title="Button" image="replay" backgroundImage="greyButton"/>
                                                 <connections>
                                                     <action selector="btnRePlayTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="SUa-Ps-evK"/>
                                                 </connections>
@@ -343,11 +346,6 @@
                             <constraint firstItem="Dlg-Hf-A1s" firstAttribute="trailing" secondItem="O1u-W8-tvY" secondAttribute="trailing" id="yF9-CX-wCX"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="O1u-W8-tvY"/>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="2UU-ea-gLl"/>
-                            </mask>
-                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tour" selectedImage="tour" id="cPa-gy-q4n" userLabel="Tour">
                         <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-12"/>
@@ -474,7 +472,7 @@
     <resources>
         <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1200" height="900"/>
         <image name="Marker1_50px" width="50" height="50"/>
-        <image name="PACKARD" width="4538" height="3956"/>
+        <image name="NONE" width="4538" height="3956"/>
         <image name="about" width="36" height="36"/>
         <image name="default_arch" width="645" height="462"/>
         <image name="gps_on" width="385" height="159"/>
@@ -484,7 +482,7 @@
         <image name="logo-horizontal-white-png" width="540" height="172"/>
         <image name="map" width="256" height="256"/>
         <image name="play" width="256" height="256"/>
-        <image name="restart" width="256" height="256"/>
+        <image name="replay" width="256" height="256"/>
         <image name="rewind" width="256" height="256"/>
         <image name="status_not_visited" width="256" height="256"/>
         <image name="tour" width="36" height="36"/>

@@ -105,8 +105,9 @@ class CAVStreamer: NSObject {
     /* =========================================================================
      ======================================================================== */
     func stop(){
-        pause()
-        player!.seek(to: CMTimeMake(0, 1))
+        player.pause()
+        //player!.seek(to: CMTimeMake(0, 1))
+        //player = nil
     }
     
     /* =========================================================================
@@ -128,6 +129,50 @@ class CAVStreamer: NSObject {
         player.play()
     }
 
+    
+    /* =========================================================================
+     Tihs functio is an adaptation of the code found here:
+     https://stackoverflow.com/a/44625372
+     ======================================================================== */
+    func fastForward(seconds:Float64) {
+        guard let duration  = player.currentItem?.duration else {
+            return
+        }
+        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
+        let newTime = playerCurrentTime + seconds
+        
+        //check to see that the future time is within the duration of the media
+        if newTime < (CMTimeGetSeconds(duration) - seconds) {
+            
+            let time2: CMTime = CMTimeMake(Int64(newTime * 1000 as Float64), 1000)
+            player.seek(to: time2, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        }
+        else {  //future time > media play time --> simply go to the end
+            //player!.seek(to: CMTimeMake(0, 1))
+            
+            player.seek(to: duration)
+            
+        }
+    }
+    
+    
+    
+    /* =========================================================================
+     Tihs functio is an adaptation of the code found here:
+     https://stackoverflow.com/a/44625372
+     ======================================================================== */
+    func rewind(seconds:Float64) {
+        
+        let playerCurrentTime = CMTimeGetSeconds(player.currentTime())
+        var newTime = playerCurrentTime - seconds
+        
+        if newTime < 0 {
+            newTime = 0
+        }
+        let time2: CMTime = CMTimeMake(Int64(newTime * 1000 as Float64), 1000)
+        player.seek(to: time2, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+    }
+    
 }
 
 

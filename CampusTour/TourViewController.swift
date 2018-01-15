@@ -38,16 +38,23 @@ class TourViewController: UIViewController {
     
     var AVStreamer:CAVStreamer!
     var avView:UIView? = nil        //a currently playing view unless it is nil
-
-    //enumera possible media states
+    
+    private var startOfPauseTime = 0.0
+    
+    //enumerate possible media states
     enum EMediaState {case stopped, playing, finished, paused, unknown}
     //set the default media state
     var mediaState:EMediaState = .stopped
+    var defaultRichText:NSAttributedString!
     
     //enumerate the tour modes
     enum ETourMode {case map, walk, notSet}
     //set the default tour mode
     var tourMode:ETourMode = .notSet
+    
+    //GPS status
+    var gpsOn:Bool!
+    
  
     // ---------------------- START CAMPUS MAP DATA ----------------------------
     /* The data in this section is specific to the image file campus_map.png.
@@ -78,6 +85,7 @@ class TourViewController: UIViewController {
     let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
     // ---------------------- END CAMPUS MAP DATA ------------------------------
     
+    
     //---------- joystick controls constants ----------
     let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
     let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
@@ -88,8 +96,13 @@ class TourViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
+        //set the default GPS mode
+        turnGpsOn(on: true)
+
         //set the default tour mode
         setTourMode(.walk)
+        
+        vStackJoyStick.isHidden = true
         
         if SCCT_DebugMode == true {
             /* set the default location to the center of the map if we are in
@@ -97,7 +110,12 @@ class TourViewController: UIViewController {
             let poi = campusTour?.poiManager.getPoi(byID: "MANLEY_CENTER")
             latestGpsLocation = poi!.coord //CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
             setMarker(coord: latestGpsLocation)
+            vStackJoyStick.isHidden = false
         }
+        
+        //pre-load the default RTF
+        defaultRichText = getDefaultRichText(defaultRtfUrl: CtDataBaseUrl + "default.rtf")
+        txtTourInfo.attributedText = defaultRichText
         
         //instantiate the A/V Streamer
         AVStreamer = CAVStreamer()
@@ -154,6 +172,10 @@ class TourViewController: UIViewController {
      Thss is the gesture recognizer for the buildings image
      ======================================================================== */
     @objc func handleImgBuildingsTap(recognizer: UITapGestureRecognizer) {
+        
+        //ignore taps if GPS is on
+        if gpsOn == true {return}
+        
         //react only when the tap ends
         if recognizer.state == .ended {
             //the location in the image target frame is returned by handleImgBuildingsTap
@@ -179,10 +201,38 @@ class TourViewController: UIViewController {
      notificaiton argument is a gps_coord object.
      ======================================================================== */
     @objc func gotNewLocationFromLocationServices(_ notification: Notification){
+        
+        //ignore newly reported locations if GPS mode is off
+        if gpsOn == false {return}
+
         let coord:CLLocation = notification.object as! CLLocation
         //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
         print("$", terminator:"")
+        
+        /* ***** We need to check if this is the same POI *****  TO DO
+        
+         How do we handle the case where media is still playing when a new location
+         is here for a different POI?  This could happen if the user
+         has traveled a long distance, not realizing his/her app is paused or
+         it could simply be that 2 POIs are close together.  To address the former
+         case, we should keep track of how long the media has been paused.
+         If it has been paused for >60 seconds, simply usurp the current media with
+         the new.
+         In the latter case, do nothing: let the media finish playing before playing
+         the new POI's media.  This amounts to ignoright the new POI for the time
+         being. */
+        
         processNewLocation(coord: coord)
+        
+        //begin autoplay
+        if let poi = campusTour?.poiManager.getNearestPoiInRange(coord: coord) {
+            if poi.status == .NotVisited {
+                poi.status = .Visited
+                playMedia(url: poi.video_url, outputView: viewTour)
+            }
+        }
+
+        setMediaButtons()
     }
     
     /* =========================================================================
@@ -230,9 +280,10 @@ class TourViewController: UIViewController {
             //if we are not near a POI, turn off the building layer
             imgBuildings.image = UIImage(named:"NONE")
             displayTopLogo(coverTitleAndCheck: true)
+            txtTourInfo.attributedText = defaultRichText
         }
         
-        //print("distance to ACC = \(poiManager.getPoi(byID: "ACC")?.coord.distance(from: test_coord))")
+        setMediaButtons()
 
     }
     
@@ -253,14 +304,18 @@ class TourViewController: UIViewController {
         "Completed". */
         avView?.removeFromSuperview()       //***TEMP
         mediaState = .stopped
-        /*
+        setMediaButtons()
+        
         if let poi = campusTour?.poiManager.getPoi(byVideoUrl: url) {
+            poi.status = .Completed
+            /*
             if poi == campusTour?.poiManager.getNearestPoiInRange(coord: <#T##gps_coord#>) {
                 //this is still the nearest POI, do not dismiss its window
                 return
-            }
-        }
-         */
+             }
+             */
+        }   //if let poi = campusTour
+
     }
 
     
@@ -307,6 +362,148 @@ class TourViewController: UIViewController {
         print("TourView callback: \(coord)")
     }
 
+    /* =========================================================================
+     while media is playing or paused:
+        turn the map/film button to a stop button and enable all media controls
+     
+     when gpsOn is true: (GPS mode on)
+        if we are not in range of a POI, gray all buttons (play/pause, rewind
+         and replay)
+         if we are in range of a "NotVisited" POI, auto-play and set the buttons as:
+            play/pause -> pause
+            rewind -> enabled
+            replay -> enabled
+         if we are in range of a "Visited" POI, do not auto-play and set the buttons as:
+            play/pause -> play
+            rewind -> enabled
+            replay -> enabled
+         if we are not in range of a POI, gray all media control buttons
+     
+     when gpsOn is false: (GPS mode off)
+        gray media buttons when we are not in range of a POI.  Otherwise
+        enable all media buttons
+     
+     ======================================================================== */
+    func setMediaButtons() {
+        
+        //Note: btnMap and btnGpsOnOff are always enabled
+        
+        //btnGpsOnOff is always enabled
+        if gpsOn == true {
+            btnGpsOnOff.setImage(UIImage(named: "gps_on"), for: .normal)
+        }
+        else {
+            btnGpsOnOff.setImage(UIImage(named: "gps_off"), for: .normal)
+        }
+        
+        if mediaState == .playing {
+            btnMap.setImage(UIImage(named: "stop"), for: .normal)
+            btnPlayPause.setImage(UIImage(named: "pause"), for: .normal)
+            btnPlayPause.isEnabled = true
+            btnRewind.isEnabled = true
+            btnRePlay.isEnabled = true
+            return
+        }
+        
+        if mediaState == .paused {
+            btnMap.setImage(UIImage(named: "stop"), for: .normal)
+            btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+            btnPlayPause.isEnabled = true
+            btnRewind.isEnabled = true
+            btnRePlay.isEnabled = true
+            return
+        }
+        
+        /* beyond this point, media is not playing or paused... set the btnMap
+         image accordingly.  Also, set the play/pause button to play
+         (it doesn't make sense to pause media that isn't playing) and
+         disable the replay button (it doesn't make sense to replay
+         somthing that is not playing. */
+        if tourMode == .map {
+            btnMap.setImage(UIImage(named: "film"), for: .normal)
+        }
+        if tourMode == .walk {
+            btnMap.setImage(UIImage(named: "map"), for: .normal)
+        }
+        
+        //set play/pause button to "play"
+        btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+        
+        //disable the replay button
+        btnRePlay.isEnabled = false
+  
+  
+        /* Deal with 4 cases:
+            * GPS on with POI in range
+            * GPS on with no POI in range
+            * GPS off with POI in range
+            * GPS off with no POI in range
+         For the first case, there are 2 subcases: when the POI in range has
+         been visited and when it has not be visited.  Autoplay will engage
+         only when the POI has not been visited,
+         See the comments on top for details of each case. */
+        if gpsOn == true {  //GPS is on
+            //check to see if there are POIs in range
+            if let nearestPoi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
+                //---------- GPS is on and there is a POI in range ----------
+                if nearestPoi.status == .NotVisited {
+                    //---------- GPS is on and there is a NotVisted POI in range ----------
+                    /*  In this case, we should start autoplaying.  The
+                     will be set when the media state changes.  This should be
+                     a temporary state.  Gray out all buttons in case it takes
+                     a while for the media to load and start playing. */
+                    btnPlayPause.setImage(UIImage(named: "pause"), for: .normal)
+                    btnPlayPause.isEnabled = false
+                    btnRewind.isEnabled = false
+                    //btnRePlay.isEnabled = false
+
+                    /* XXXXXXXXXXXX TO DELETE
+                     , so set the play/pause button
+                     to pause.  Enable the rewind and replay button.  The stop button will be
+                     set once the media state actually switches to playing.
+                     XXXXXXXXXX */
+                }
+                else {
+                    //---------- GPS is on and there is a Visted, Completed or other state POI in range ----------
+                    /* In this case, we want to offer the user the ability to
+                     replay the media. */
+                    btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+                    btnPlayPause.isEnabled = true
+                    btnRewind.isEnabled = true
+                    //btnRePlay.isEnabled = true
+                }
+            }
+            else {
+                //---------- GPS is on and there are no POIs in range ----------
+                /* In this case, simply disable all media buttons. */
+                btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+                btnPlayPause.isEnabled = false
+                btnRewind.isEnabled = false
+                //btnRePlay.isEnabled = false
+            }   //else for if let nearestPoi
+        }   //if gpsOn == true
+        else {  //GPS is off
+            /* gray media buttons when we are not in range of a POI.  Otherwise
+            enable all media buttons. */
+            //check to see if there are POIs in range
+            if let nearestPoi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
+                //---------- GPS is off and there is a POI in range ----------
+                btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+                btnPlayPause.isEnabled = true
+                btnRewind.isEnabled = true
+                //btnRePlay.isEnabled = true
+            }
+            else {
+                //---------- GPS is off and there are no POIs in range ----------
+                btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
+                btnPlayPause.isEnabled = false
+                btnRewind.isEnabled = false
+                //btnRePlay.isEnabled = false
+            }   //else for if let nearestPoi
+        }   //else for if gpsOn == true
+
+    }   //func setMediaButtons()
+    
     
     /* =========================================================================
      This function attempts to play the media (audio or video) at the
@@ -318,6 +515,7 @@ class TourViewController: UIViewController {
         if let outView = outputView {
             // a UIView window has been supplied.  Use it for video output
             avView = AVStreamer.playMedia(url:url, outputUIViewWidth:outView.bounds.size.width, outputUIViewHeight: outView.bounds.size.height, showPlaybackControls:false)
+            mediaState = .playing
             
             if let view = avView {
                 outView.addSubview(view)
@@ -327,33 +525,75 @@ class TourViewController: UIViewController {
         else {
             // no UIView was supplied; assume this is audio.  We do not need the returned UIView value
             AVStreamer.playMedia(url:url, showPlaybackControls:false)
+            mediaState = .playing
         }
     }
     
+
+    /* =========================================================================
+     Mark the start of the pause.
+     Use this function to mark the start of pausing the media player.
+     Use the getPauseTime() function return the amount of time in seconds
+     that has elapsed since pause was pressed.  For this to work properly
+     be sure to call markPause() whenever AVStream.pause() is called.
+     ======================================================================== */
+    func markPause() {
+        startOfPauseTime = Date.timeIntervalSinceReferenceDate
+    }
+    
+    /* =========================================================================
+     Use this function to get the number of seconds that have elapsed since
+     the user paused the playing media.  If the media is not currently
+     paused, the function returns 0.0
+     ======================================================================== */
+    func getPauseTime() -> Double {
+        if mediaState == .paused {
+            //here, we want to return the number of elapsed seconds
+            return Date.timeIntervalSinceReferenceDate - startOfPauseTime
+        }
+        return 0.0      //return 0, since we are not paused.
+    }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnPlayPauseTouchUpInside(_ sender: Any) {
-        var image:UIImage?
+        //var image:UIImage?
         
         switch mediaState {
         case .playing:
-            image = UIImage(named: "play")
-            mediaState = .paused
+           // image = UIImage(named: "play")
             AVStreamer.pause()
+            mediaState = .paused
+            markPause()     //mark the start of the pause
         case .paused:
             AVStreamer.unpause()
-            image = UIImage(named: "pause")
+           // image = UIImage(named: "pause")
             mediaState = .playing
         default:
-            image = UIImage(named: "pause")
+            //image = UIImage(named: "pause")
+            
+            if let poi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
+                mediaState = .playing
+                playMedia(url: poi.video_url, outputView: viewTour /*imgTourImage*/)
+                
+                /*
+                txtTourInfo.attributedText = poi.richText
+                
+                displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.rtf", targetView: txtTourInfo) */
+            }
+            else {
+                print("**** ERROR: the play button was pushed, but there is no POI in range.  The play button should not have been enabled.")
+            }
+            /*
             mediaState = .playing
             playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.mp4", outputView: viewTour /*imgTourImage*/)
             //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
             displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.rtf", targetView: txtTourInfo)
+             */
         }
 
-        btnPlayPause.setImage(image, for: .normal)
+        //btnPlayPause.setImage(image, for: .normal)
+        setMediaButtons()
     }
 
     
@@ -556,21 +796,21 @@ class TourViewController: UIViewController {
     /* =========================================================================
      ======================================================================== */
     func setTourMode(_ tourMode:ETourMode) {
-        var image:UIImage?
+        //var image:UIImage?
         var tour_image:UIImage?
 
         if tourMode == self.tourMode {return}   //nothing to do
         
         switch tourMode {
         case .map:
-            image = UIImage(named: "film")
+            //image = UIImage(named: "film")
             tour_image = UIImage(named: "campus_map")
             imgTourImage.contentMode = .scaleAspectFit
             imgBuildings.isHidden = false
             imgMarker.isHidden = false
             self.tourMode = .map
         case .walk:
-            image = UIImage(named: "map")
+            //image = UIImage(named: "map")
             tour_image = UIImage(named: "default_arch")
             imgTourImage.contentMode = .scaleAspectFill
             imgBuildings.isHidden = true
@@ -580,15 +820,32 @@ class TourViewController: UIViewController {
             print("invalid tour mode: \(tourMode)")
         }   //switch
         
-        btnMap.setImage(image, for: .normal)
+        //btnMap.setImage(image, for: .normal)
+        setMediaButtons()
         imgTourImage.image = tour_image //.setImage(tour_image, for: .normal)        i
         
     }   //func
+
+    /* =========================================================================
+     ======================================================================== */
+    func turnGpsOn(on: Bool) {
+        gpsOn = on
+        setMediaButtons()
+    }
+    
+    
+    /* =========================================================================
+     ======================================================================== */
+    @IBAction func btnGpsOnOffTouchUpInside(_ sender: Any) {
+        turnGpsOn(on: !gpsOn)
+    }
+
     
     /* =========================================================================
      rewind 10 seconds
      ======================================================================== */
     @IBAction func btnRewindTouchUpInside(_ sender: Any) {
+        AVStreamer.rewind(seconds: 10)
     }
     
     /* =========================================================================
@@ -596,11 +853,29 @@ class TourViewController: UIViewController {
      ======================================================================== */
     @IBAction func btnRePlayTouchUpInside(_ sender: Any) {
         AVStreamer.replay()
+        mediaState = .playing
+        setMediaButtons()
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnMapTouchUpInside(_ sender: Any) {
+        //this button beomes the stop button when media is playing or paused
+        if mediaState == .playing || mediaState == .paused {
+            
+            AVStreamer.stop()
+            if avView != nil {
+                avView?.removeFromSuperview()
+            }
+            else {
+                print("****** ERROR: the stop button was clicked, but there is no active media playing.  The stop button should not have been enabled.")
+            }
+            mediaState = .stopped
+            
+            setMediaButtons()
+            return
+        }
+            
         switch tourMode {
         case .walk: //current mode is walk, so switch to map
             setTourMode(.map)
@@ -613,33 +888,60 @@ class TourViewController: UIViewController {
     }   //func
     
     
-
+    /* =========================================================================
+     this function attempts to load the RTF data from the provided rtf_url
+     ======================================================================== */
+    func getDefaultRichText( defaultRtfUrl:String) -> NSAttributedString {
+        //richText = nil  //set a default value
+        
+        if let url = URL(string: defaultRtfUrl) {
+            do {
+                //read the data from the rtf file
+                let data = try Data(contentsOf: url)
+                
+                //convert the data into an atrributed string
+                let richText = try NSAttributedString(data: data, options: [:], documentAttributes: nil)
+                return richText
+            }   //do
+            catch {
+                // contents could not be loaded
+                print("could not read contents of \(defaultRtfUrl)")
+            }
+        }   // if let url = URL(string:
+        else {
+            // the URL was bad!
+            print("bad URL for \(defaultRtfUrl)")
+        }
+        //return an empty NSAttributedString object if we fail to load the default RTF
+        return NSAttributedString()
+    }
+    
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyUpTouchUpInside(_ sender: Any) {
         latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude - JOYSTICK_Y_INC, longitude:latestGpsLocation.coordinate.longitude)
-        setMarker(coord: latestGpsLocation)
+        //setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyDownTouchUpInside(_ sender: Any) {
         latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude + JOYSTICK_Y_INC, longitude:latestGpsLocation.coordinate.longitude)
-        setMarker(coord: latestGpsLocation)
+        //setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyRightTouchUpInside(_ sender: Any) {
         latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude, longitude:latestGpsLocation.coordinate.longitude + JOYSTICK_X_INC)
-        setMarker(coord: latestGpsLocation)
+        //setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
      ======================================================================== */
     @IBAction func btnJoyLeftTouchUpInside(_ sender: Any) {
         latestGpsLocation =  CLLocation(latitude:latestGpsLocation.coordinate.latitude, longitude:latestGpsLocation.coordinate.longitude - JOYSTICK_X_INC)
-        setMarker(coord: latestGpsLocation)
+        //setMarker(coord: latestGpsLocation)
     }
     
     /* =========================================================================
@@ -647,7 +949,7 @@ class TourViewController: UIViewController {
      ======================================================================== */
     @IBAction func btnJoyMiddleTouchUpInside(_ sender: Any) {
         latestGpsLocation = CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
-        setMarker(coord: latestGpsLocation)
+        //setMarker(coord: latestGpsLocation)
     }
     
 

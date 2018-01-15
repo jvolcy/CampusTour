@@ -17,7 +17,7 @@
 
 - the checkmark graphic needs to reflect the poi status
 
-- stub files for JPG, RTF and MP3 needed
+- stub files for JPG, MP4 and MP3 needed
 
 - must pre-load POI RTFs to make map navigation fast.
 
