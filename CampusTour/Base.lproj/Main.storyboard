@@ -178,7 +178,7 @@
                                                 <rect key="frame" x="75" y="0.0" width="75" height="35"/>
                                                 <state key="normal" title="Button" image="map" backgroundImage="greyButton"/>
                                                 <connections>
-                                                    <action selector="btnMapTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="nix-Tr-6OH"/>
+                                                    <action selector="btnMapMediaStopTouchUpInside:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="TRa-3M-lYO"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="duE-Tu-y1W" userLabel="btnPlayPause">
@@ -352,7 +352,7 @@
                     </tabBarItem>
                     <connections>
                         <outlet property="btnGpsOnOff" destination="Kxm-PF-ti2" id="5vR-cn-PYa"/>
-                        <outlet property="btnMap" destination="BjH-2b-6RD" id="5xd-CY-wtw"/>
+                        <outlet property="btnMapMediaStop" destination="BjH-2b-6RD" id="fk6-G3-yl8"/>
                         <outlet property="btnPlayPause" destination="duE-Tu-y1W" id="Kdz-Dj-xMG"/>
                         <outlet property="btnRePlay" destination="vdW-c5-b2h" id="CEf-SR-R1c"/>
                         <outlet property="btnRewind" destination="Kbq-0Y-ftC" id="0iU-Qn-e96"/>

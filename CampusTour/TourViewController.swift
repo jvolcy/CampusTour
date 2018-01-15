@@ -14,7 +14,7 @@ class TourViewController: UIViewController {
     
 
     @IBOutlet weak var txtTourInfo: UITextView! //main tour information attributed text display
-    @IBOutlet weak var btnMap: UIButton!
+    @IBOutlet weak var btnMapMediaStop: UIButton!
     @IBOutlet weak var btnPlayPause: UIButton!
     @IBOutlet weak var btnGpsOnOff: UIButton!
     @IBOutlet weak var btnRePlay: UIButton!
@@ -39,7 +39,9 @@ class TourViewController: UIViewController {
     var AVStreamer:CAVStreamer!
     var avView:UIView? = nil        //a currently playing view unless it is nil
     
+    //info on the currently playing POI media
     private var startOfPauseTime = 0.0
+    private var currentPoi:CPoi!
     
     //enumerate possible media states
     enum EMediaState {case stopped, playing, finished, paused, unknown}
@@ -124,7 +126,7 @@ class TourViewController: UIViewController {
         btnPlayPause.imageView?.contentMode = .scaleAspectFit
         btnRePlay.imageView?.contentMode = .scaleAspectFit
         btnRewind.imageView?.contentMode = .scaleAspectFit
-        btnMap.imageView?.contentMode = .scaleAspectFit
+        btnMapMediaStop.imageView?.contentMode = .scaleAspectFit
         btnGpsOnOff.imageView?.contentMode = .scaleAspectFit
         
         //default to logo display
@@ -229,6 +231,7 @@ class TourViewController: UIViewController {
             if poi.status == .NotVisited {
                 poi.status = .Visited
                 playMedia(url: poi.video_url, outputView: viewTour)
+                currentPoi = poi
             }
         }
 
@@ -273,9 +276,20 @@ class TourViewController: UIViewController {
                 }
             }
             lblTitle.text = poi!.title
-            imgCheck.image = UIImage(named:"status_visited")
+            switch poi!.status {
+            case .NotVisited:
+                imgCheck.image = UIImage(named:"status_not_visited")
+            case .Visited:
+                imgCheck.image = UIImage(named:"status_visited")
+            case .Completed:
+                imgCheck.image = UIImage(named:"status_completed")
+            default:    //this should never happen
+                imgCheck.image = nil
+                print("ERROR: poi has invalid status.")
+            }
+            
             displayTopLogo(coverTitleAndCheck: false)
-        }
+        }   //if poi != nil
         else {
             //if we are not near a POI, turn off the building layer
             imgBuildings.image = UIImage(named:"NONE")
@@ -304,18 +318,11 @@ class TourViewController: UIViewController {
         "Completed". */
         avView?.removeFromSuperview()       //***TEMP
         mediaState = .stopped
+        currentPoi.status = .Completed
         setMediaButtons()
         
-        if let poi = campusTour?.poiManager.getPoi(byVideoUrl: url) {
-            poi.status = .Completed
-            /*
-            if poi == campusTour?.poiManager.getNearestPoiInRange(coord: <#T##gps_coord#>) {
-                //this is still the nearest POI, do not dismiss its window
-                return
-             }
-             */
-        }   //if let poi = campusTour
-
+        //update the building and check images
+        processNewLocation(coord: latestGpsLocation)
     }
 
     
@@ -386,7 +393,7 @@ class TourViewController: UIViewController {
      ======================================================================== */
     func setMediaButtons() {
         
-        //Note: btnMap and btnGpsOnOff are always enabled
+        //Note: btnMapMediaStop and btnGpsOnOff are always enabled
         
         //btnGpsOnOff is always enabled
         if gpsOn == true {
@@ -397,7 +404,7 @@ class TourViewController: UIViewController {
         }
         
         if mediaState == .playing {
-            btnMap.setImage(UIImage(named: "stop"), for: .normal)
+            btnMapMediaStop.setImage(UIImage(named: "stop"), for: .normal)
             btnPlayPause.setImage(UIImage(named: "pause"), for: .normal)
             btnPlayPause.isEnabled = true
             btnRewind.isEnabled = true
@@ -406,7 +413,7 @@ class TourViewController: UIViewController {
         }
         
         if mediaState == .paused {
-            btnMap.setImage(UIImage(named: "stop"), for: .normal)
+            btnMapMediaStop.setImage(UIImage(named: "stop"), for: .normal)
             btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
             btnPlayPause.isEnabled = true
             btnRewind.isEnabled = true
@@ -414,16 +421,16 @@ class TourViewController: UIViewController {
             return
         }
         
-        /* beyond this point, media is not playing or paused... set the btnMap
+        /* beyond this point, media is not playing or paused... set the btnMapMediaStop
          image accordingly.  Also, set the play/pause button to play
          (it doesn't make sense to pause media that isn't playing) and
          disable the replay button (it doesn't make sense to replay
          somthing that is not playing. */
         if tourMode == .map {
-            btnMap.setImage(UIImage(named: "film"), for: .normal)
+            btnMapMediaStop.setImage(UIImage(named: "film"), for: .normal)
         }
         if tourMode == .walk {
-            btnMap.setImage(UIImage(named: "map"), for: .normal)
+            btnMapMediaStop.setImage(UIImage(named: "map"), for: .normal)
         }
         
         //set play/pause button to "play"
@@ -575,6 +582,12 @@ class TourViewController: UIViewController {
             if let poi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
                 mediaState = .playing
                 playMedia(url: poi.video_url, outputView: viewTour /*imgTourImage*/)
+                currentPoi = poi
+                
+                //if this is the first time we are visiting this POI, change its status to .Visited
+                if poi.status == .NotVisited {
+                    poi.status = .Visited
+                }
                 
                 /*
                 txtTourInfo.attributedText = poi.richText
@@ -584,12 +597,6 @@ class TourViewController: UIViewController {
             else {
                 print("**** ERROR: the play button was pushed, but there is no POI in range.  The play button should not have been enabled.")
             }
-            /*
-            mediaState = .playing
-            playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.mp4", outputView: viewTour /*imgTourImage*/)
-            //playMedia(url: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/DEFAULT.mp3", outputView: nil)
-            displayAttributedTextFromURL(rtfFileUrl: "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/default.rtf", targetView: txtTourInfo)
-             */
         }
 
         //btnPlayPause.setImage(image, for: .normal)
@@ -820,7 +827,7 @@ class TourViewController: UIViewController {
             print("invalid tour mode: \(tourMode)")
         }   //switch
         
-        //btnMap.setImage(image, for: .normal)
+        //btnMapMediaStop.setImage(image, for: .normal)
         setMediaButtons()
         imgTourImage.image = tour_image //.setImage(tour_image, for: .normal)        i
         
@@ -859,7 +866,7 @@ class TourViewController: UIViewController {
     
     /* =========================================================================
      ======================================================================== */
-    @IBAction func btnMapTouchUpInside(_ sender: Any) {
+    @IBAction func btnMapMediaStopTouchUpInside(_ sender: Any) {
         //this button beomes the stop button when media is playing or paused
         if mediaState == .playing || mediaState == .paused {
             
@@ -875,7 +882,7 @@ class TourViewController: UIViewController {
             setMediaButtons()
             return
         }
-            
+        
         switch tourMode {
         case .walk: //current mode is walk, so switch to map
             setTourMode(.map)

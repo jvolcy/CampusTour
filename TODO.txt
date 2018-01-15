@@ -9,20 +9,8 @@
 3) if no mp4 is found, look for a jpg.  If it is found display it.  Otherwise, display a default photo.
 4) look for an mp3.  If one is found, play it.
 
-
-- poi status needs to be implemented:
-1) initially, all poi have a status of "NotVisited"
-2) once media for a poi begins to play, that poi should be marked as "Visited"
-3) when the media finishes playing, the poi should be marked as "Completed"
-
-- the checkmark graphic needs to reflect the poi status
-
 - stub files for JPG, MP4 and MP3 needed
-
-- must pre-load POI RTFs to make map navigation fast.
-
-- joystick controls should disappear when we are not in debug mode
 
 - need to create some hidden way to switch to debug mode
 
-- turn the map button to a stop button when media is playing
+
