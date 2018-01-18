@@ -29,7 +29,7 @@
                                     <constraint firstAttribute="height" constant="130" id="rGS-Qo-f1C"/>
                                 </constraints>
                             </imageView>
-                            <pickerView hidden="YES" alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nba-9A-znf" userLabel="pikTourChoice">
+                            <pickerView alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nba-9A-znf" userLabel="pikTourChoice">
                                 <rect key="frame" x="30.5" y="289" width="315" height="90"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -72,6 +72,7 @@
                     </tabBarItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="btnStart" destination="WX8-K1-N3a" id="GJJ-TM-7Vm"/>
                         <outlet property="pikTourChoice" destination="Nba-9A-znf" id="tGe-Hp-NBv"/>
                     </connections>
                 </viewController>
@@ -450,7 +451,7 @@
         <scene sceneID="yl2-sM-qoP">
             <objects>
                 <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
-                    <tabBar key="tabBar" opaque="NO" alpha="0.5" contentMode="scaleAspectFit" id="W28-zg-YXA">
+                    <tabBar key="tabBar" hidden="YES" opaque="NO" alpha="0.5" contentMode="scaleAspectFit" id="W28-zg-YXA">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

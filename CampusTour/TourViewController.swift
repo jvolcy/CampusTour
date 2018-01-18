@@ -85,6 +85,11 @@ class TourViewController: UIViewController {
 
     let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
     let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
+    
+    //the default location is in the Cosby parking lot
+    let DEFAULT_LOCATION = CLLocation(latitude:33.745897, longitude:-84.412897)
+    
+    
     // ---------------------- END CAMPUS MAP DATA ------------------------------
     
     
@@ -109,8 +114,10 @@ class TourViewController: UIViewController {
         if SCCT_DebugMode == true {
             /* set the default location to the center of the map if we are in
  debug mode. */
-            let poi = campusTour?.poiManager.getPoi(byID: "MANLEY_CENTER")
-            latestGpsLocation = poi!.coord //CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
+            //let poi = campusTour?.poiManager.getPoi(byID: "MANLEY_CENTER")
+            //latestGpsLocation = poi!.coord //CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
+            
+            latestGpsLocation = DEFAULT_LOCATION
             setMarker(coord: latestGpsLocation)
             vStackJoyStick.isHidden = false
         }
