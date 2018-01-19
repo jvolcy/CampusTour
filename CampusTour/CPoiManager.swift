@@ -52,159 +52,127 @@ class CPoiManager {
         //compose the full URL of the POI index file
         CtPoiIndexFile = CtDataBaseUrl+CtPoiIndexFilename
         
-        //extract the data from the POI file and create an array of POIs.
-        if let url = URL(string: CtPoiIndexFile) {
-            do {
-                let contents = try String(contentsOf: url, encoding:.ascii)
-                
-                /* Spliting the contents of the scct_poi.tsv file into individual lines using String.split()
-                 is not working.  This appears to be a bug in XCode or Swift.  The segment of code below
-                 illustrates the issue:
-                 
-                 if contents.contains("\r") {
-                 print("I found: a NL")
-                 }
-                 else{
-                 print("No NL found")
-                 }
-                 
-                 let x = contents.index(of: "\r")
-                 print (x)
-                 
-                 Here, contents is the string read from the URL.  The code above checks to see if
-                 contents contains a "\r".  Then, it attempts to find the location of the "\r" in
-                 the string.  When the code runs, it confirms that the string does indeed contain
-                 a "\r", but then it fails to find it when a search is performed.
-                 
-                 In the same way, the line
-                 let pois = str.split(separator: "\r")
-                 fails to yield the expected array of records in contents.  This is perhaps
-                 a problem of encoding, but different encodings didn't yield better results.
-                 
-                 What seems to work (reason unclear) is to parse through contents
-                 character by character and to reconstruct a new string, contents2.
-                 Performing split on this new string seems to work.
-                 */
-                
-                var contents2=""
-                
-                for i in contents {
-                    let u = UInt8(ascii: i.unicodeScalars.first!)
-                    contents2 += String(UnicodeScalar(UInt8(u)))
-                }
-                
-                //split the file by "\r" characters to create an array of POI records.
-                let poiRecords = contents2.split(separator: "\r")//, omittingEmptySubsequences: false)
-                
-                /* now go through the POI records and split each one into a POI tuple before adding
-                 them to the POI array.  All POI records that begin with a "#" character will be ignored. */
-                for poiRecord in poiRecords {
-                    // Read the records one at a time and check to see that they don't start with a "#"
-                    let poiRecordFields = poiRecord.split(separator: "\t", omittingEmptySubsequences: false)
-                    
-                    //avoid records that have been commented out
-                    if poiRecordFields[0][poiRecordFields[0].startIndex] != "#" {
-                        //extract the data from the record
-                        let poiID = String(poiRecordFields[0])
-                        let title = String(poiRecordFields[1])
-                        //set latitude, logitude and radiusFT to 0 if they are nil
-                        let latitude = Double(poiRecordFields[2]) ?? 0.0
-                        let longitude = Double(poiRecordFields[3]) ?? 0.0
-                        let radiusInMeters = (Double(poiRecordFields[4]) ?? 0.0) * 0.3048   //convert to meters
-                        var rtf_url = String(poiRecordFields[5])
-                        var img_url = String(poiRecordFields[6])
-                        var audio_url = String(poiRecordFields[7])
-                        var video_url = String(poiRecordFields[8])
-                        
-                        /* Here, we append the the filename to the base URL to
-                         create full URL names for the rtf, jpg, mp3 and mp4
-                         files.  The special cases of DEFAULT and NONE are
-                         handled here. */
-                        
-                        //compose the RTF URL
-                        switch rtf_url {
-                        case "DEFAULT":
-                            //for this case, use the POI_ID as the filename
-                            rtf_url = CtDataBaseUrl + poiID + ".rtf"
-                        case "NONE":
-                            //for this case, leave the url as "NONE"
-                            break
-                        default:
-                            //for all other cases, append the supplied filename to the base URL
-                            rtf_url = CtDataBaseUrl + rtf_url
-                        }
-                        
-                        //compose the JPG URL
-                        switch img_url {
-                        case "DEFAULT":
-                            //for this case, use the POI_ID as the filename
-                            img_url = CtDataBaseUrl + poiID + ".jpg"
-                        case "NONE":
-                            //for this case, leave the url as "NONE"
-                            break
-                        default:
-                            //for all other cases, append the supplied filename to the base URL
-                            img_url = CtDataBaseUrl + img_url
-                        }
-                        
-                        //compose the MP3 URL
-                        switch audio_url {
-                        case "DEFAULT":
-                            //for this case, use the POI_ID as the filename
-                            audio_url = CtDataBaseUrl + poiID + ".mp3"
-                        case "NONE":
-                            //for this case, leave the url as "NONE"
-                            break
-                        default:
-                            //for all other cases, append the supplied filename to the base URL
-                            audio_url = CtDataBaseUrl + audio_url
-                        }
-                        
-                        //compose the MP4 URL
-                        switch video_url {
-                        case "DEFAULT":
-                            //for this case, use the POI_ID as the filename
-                            video_url = CtDataBaseUrl + poiID + ".mp4"
-                        case "NONE":
-                            //for this case, leave the url as "NONE"
-                            break
-                        default:
-                            //for all other cases, append the supplied filename to the base URL
-                            video_url = CtDataBaseUrl + video_url
-                        }
+        //read the JSON POI index file
+        readPoiData(poiIndexFileUrl: CtPoiIndexFile)
 
-                        //build the poi object using the full URLs
-                        let new_poi = CPoi(poiID: poiID,
-                                           title: title,
-                                           coord: CLLocation(latitude:latitude, longitude:longitude),
-                                           radiusInMeters: radiusInMeters,
-                                           rtf_url: rtf_url,
-                                           img_url: img_url,
-                                           audio_url: audio_url,
-                                           video_url: video_url)
-                        
-                        POIs.append(new_poi)    //add the poi to the POIs array
-                    }   //if poiRecordFields[0][poiRecordFields[0].startIndex] != "#"
-                    
-                }   //for poiRecord in poiRecords
-            }   //do
-            catch {
-                // contents could not be loaded
-                print("could not read contents of \(CtPoiIndexFile)")
-            }
-        }   // if let url = URL(string:
-        else {
-            // the URL was bad!
-            print("bad URL for \(CtPoiIndexFile)")
-        }
-        
-        /*for poi in POIs {
+        /*
+        for poi in POIs {
             print(poi.toString(), "\n")
         }
         */
     }   //init()
     
     
+    /* =========================================================================
+     this function reads the JSON POI index file and stores its contents in
+     the CPoi array, POIs
+     ======================================================================== */
+    func readPoiData(poiIndexFileUrl:String) {
+        if let url = URL(string: poiIndexFileUrl) {
+            do {
+                //read the data from the json file
+                let data = try Data(contentsOf: url)
+                
+                //create a [String:String ]dictionary of the entries
+                let d = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                
+                //"pois" is an array of dictionaries
+                for poi in d!["pois"] as! [[String:String]] {
+                    //each poi is a dictionary that describes a point of interest
+                    //extract the data from the record
+                    let poiID = poi["POI_ID"]!
+                    let title = poi["TITLE"]!
+                    //set latitude, logitude and radiusFT to 0 if they are nil
+                    let latitude = Double(poi["LATITUDE"]!) ?? 0.0
+                    let longitude = Double(poi["LONGITUDE"]!) ?? 0.0
+                    let radiusInMeters = (Double(poi["RADIUS_FT"]!) ?? 0.0) * 0.3048   //convert to meters
+                    var rtf_url = poi["RTF_URL"]!
+                    var img_url = poi["IMG_URL"]!
+                    var audio_url = poi["AUDIO_URL"]!
+                    var video_url = poi["VIDEO_URL"]!
+                    
+                    /* Here, we append the the filename to the base URL to
+                     create full URL names for the rtf, jpg, mp3 and mp4
+                     files.  The special cases of DEFAULT and NONE are
+                     handled here. */
+                    
+                    //compose the RTF URL
+                    switch rtf_url {
+                    case "DEFAULT":
+                        //for this case, use the POI_ID as the filename
+                        rtf_url = CtDataBaseUrl + poiID + ".rtf"
+                    case "NONE":
+                        //for this case, leave the url as "NONE"
+                        break
+                    default:
+                        //for all other cases, append the supplied filename to the base URL
+                        rtf_url = CtDataBaseUrl + rtf_url
+                    }
+                    
+                    //compose the JPG URL
+                    switch img_url {
+                    case "DEFAULT":
+                        //for this case, use the POI_ID as the filename
+                        img_url = CtDataBaseUrl + poiID + ".jpg"
+                    case "NONE":
+                        //for this case, leave the url as "NONE"
+                        break
+                    default:
+                        //for all other cases, append the supplied filename to the base URL
+                        img_url = CtDataBaseUrl + img_url
+                    }
+                    
+                    //compose the MP3 URL
+                    switch audio_url {
+                    case "DEFAULT":
+                        //for this case, use the POI_ID as the filename
+                        audio_url = CtDataBaseUrl + poiID + ".mp3"
+                    case "NONE":
+                        //for this case, leave the url as "NONE"
+                        break
+                    default:
+                        //for all other cases, append the supplied filename to the base URL
+                        audio_url = CtDataBaseUrl + audio_url
+                    }
+                    
+                    //compose the MP4 URL
+                    switch video_url {
+                    case "DEFAULT":
+                        //for this case, use the POI_ID as the filename
+                        video_url = CtDataBaseUrl + poiID + ".mp4"
+                    case "NONE":
+                        //for this case, leave the url as "NONE"
+                        break
+                    default:
+                        //for all other cases, append the supplied filename to the base URL
+                        video_url = CtDataBaseUrl + video_url
+                    }
+                    
+                    //build the poi object using the full URLs
+                    let new_poi = CPoi(poiID: poiID,
+                                       title: title,
+                                       coord: CLLocation(latitude:latitude, longitude:longitude),
+                                       radiusInMeters: radiusInMeters,
+                                       rtf_url: rtf_url,
+                                       img_url: img_url,
+                                       audio_url: audio_url,
+                                       video_url: video_url)
+                    
+                    POIs.append(new_poi)    //add the poi to the POIs array
+                }   //for poi in
+            }   //do
+            catch {
+                // contents could not be loaded
+                print("could not read contents of \(poiIndexFileUrl)")
+            }
+        }   // if let url = URL(string:
+        else {
+            // the URL was bad!
+            print("bad URL: \(poiIndexFileUrl)")
+        }
+
+    }
+
     
     /* =========================================================================
      This function returns the closest POI that is in range of the supplied coordinates

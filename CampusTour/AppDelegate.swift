@@ -72,15 +72,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //first thing we have to do is read the configuration file for the application
         readConfigFile(fileUrl: CtConfigFileUrl)
 
+        /*
         print("***** Config Data *****")
         for item in appConfig {
             print("\(item.key) = \(item.value)")
         }
         print("***********************")
-
+        */
+        
         CtDataBaseUrl = appConfig["baseUrl"]
-        //CtPoiIndexFilename = appConfig["poiIndexFile"]
-        CtPoiIndexFilename = "scct_poi.tsv"         //******** TEMP ***********
+        CtPoiIndexFilename = appConfig["poiIndexFile"]
         
         // Override point for customization after application launch.
         //print("CFBundleVersion", Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
