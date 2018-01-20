@@ -18,7 +18,7 @@ var latestGpsLocation = CLLocation()
 //config file
 let CtConfigFileUrl = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/ct_config.json"
 
-var CtDataBaseUrl:String!       //global base URL and for CT data (read from config file)
+//var CtDataBaseUrl:String!       //global base URL and for CT data (read from config file)
 var CtPoiIndexFilename:String!  //filename for poi index data (read from config file)
 
 /* SCCT_DebugMode is a global boolean that switches between running in debug
@@ -80,13 +80,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("***********************")
         */
         
-        CtDataBaseUrl = appConfig["baseUrl"]
+        //CtDataBaseUrl = appConfig["baseUrl"]
         CtPoiIndexFilename = appConfig["poiIndexFile"]
         
         // Override point for customization after application launch.
         //print("CFBundleVersion", Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
         //print("CFBundleShortVersionString", Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
-        campusTour=CCampusTour(CtDataBaseUrl:CtDataBaseUrl, CtPoiIndexFilename:CtPoiIndexFilename)
+        campusTour=CCampusTour(CtDataBaseUrl:appConfig["baseUrl"]!, CtPoiIndexFilename:CtPoiIndexFilename)
         return true
     }
 

@@ -59,50 +59,51 @@ class TourViewController: UIViewController {
     
  
     // ---------------------- START CAMPUS MAP DATA ----------------------------
-    /* The data in this section is specific to the image file campus_map.png.
+    /*  Get image calibration information from the config file.
+     The data in this section is specific to the image file campus_map.png.
      This file is 4538 × 3956 and 3,564,877 bytes.  Using a different campus
-     image file will invalidate the data below. */
-    static let CAMPUS_IMG_SIZE_X = 4538
-    static let CAMPUS_IMG_SIZE_Y = 3956
+     image file will require updating the config file ct_config.json. */
+    var CAMPUS_IMG_SIZE_X:Double!     //4538
+    var CAMPUS_IMG_SIZE_Y:Double!   //3956
     
-    static let CAL_POINT1_X = 540
-    static let CAL_POINT1_Y = 454
-    static let CAL_POINT1_LAT = 33.746832
-    static let CAL_POINT1_LON = -84.413719
+    var CAL_POINT1_X:Double!      //540
+    var CAL_POINT1_Y:Double!    //454
+    var CAL_POINT1_LAT:Double!    //33.746832
+    var CAL_POINT1_LON:Double!    //-84.413719
 
-    static let CAL_POINT2_X = 3551
-    static let CAL_POINT2_Y = 2631
-    static let CAL_POINT2_LAT = 33.744402
-    static let CAL_POINT2_LON = -84.409692
+    var CAL_POINT2_X:Double!    //3551
+    var CAL_POINT2_Y:Double!    //2631
+    var CAL_POINT2_LAT:Double!    //33.744402
+    var CAL_POINT2_LON:Double!    //-84.409692
     
-    static let SLOPEX = (CAL_POINT2_LON - CAL_POINT1_LON)/Double(CAL_POINT2_X - CAL_POINT1_X)
-    static let CAMPUS_LEFT_LONGITUDE = CAL_POINT1_LON + Double(0 - CAL_POINT1_X) * SLOPEX
-    static let CAMPUS_RIGHT_LONGITUDE = CAL_POINT1_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT1_X) * SLOPEX
+    var CAMPUS_LEFT_LONGITUDE:Double!
+    var CAMPUS_RIGHT_LONGITUDE:Double!
+    var CAMPUS_TOP_LATITUDE:Double!
+    var CAMPUS_BOTTOM_LATITUDE:Double!
 
-    static let SLOPEY = (CAL_POINT2_LAT - CAL_POINT1_LAT)/Double(CAL_POINT2_Y - CAL_POINT1_Y)
-    static let CAMPUS_TOP_LATITUDE = CAL_POINT1_LAT + Double(0 - CAL_POINT1_Y) * SLOPEY
-    static let CAMPUS_BOTTOM_LATITUDE = CAL_POINT1_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT1_Y) * SLOPEY
-
-    let CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
-    let CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
+    var CAMPUS_LATITUDE:Double!
+    var CAMPUS_LONGITUDE:Double!
     
-    //the default location is in the Cosby parking lot
-    let DEFAULT_LOCATION = CLLocation(latitude:33.745897, longitude:-84.412897)
-    
+    //load the default location from the config file (currently the Cosby parking lot)
+    var DEFAULT_LOCATION:CLLocation!
     
     // ---------------------- END CAMPUS MAP DATA ------------------------------
     
     
     //---------- joystick controls constants ----------
-    let JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
-    let JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
-        
+    var JOYSTICK_X_INC:Double!
+    var JOYSTICK_Y_INC:Double!
+
+    
     /* =========================================================================
      ======================================================================== */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-
+        
+        //load configuration data
+        loadConfig()
+        
         //set the default GPS mode
         turnGpsOn(on: true)
 
@@ -110,20 +111,18 @@ class TourViewController: UIViewController {
         setTourMode(.walk)
         
         vStackJoyStick.isHidden = true
+        lblGpsCoord.isHighlighted = true
         
         if SCCT_DebugMode == true {
-            /* set the default location to the center of the map if we are in
- debug mode. */
-            //let poi = campusTour?.poiManager.getPoi(byID: "MANLEY_CENTER")
-            //latestGpsLocation = poi!.coord //CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
-            
+            /* set the default location to the center of the map if we are in debug mode. */
             latestGpsLocation = DEFAULT_LOCATION
             setMarker(coord: latestGpsLocation)
             vStackJoyStick.isHidden = false
+            lblGpsCoord.isHidden = false
         }
         
         //pre-load the default RTF
-        defaultRichText = getDefaultRichText(defaultRtfUrl: CtDataBaseUrl + "default.rtf")
+        defaultRichText = getDefaultRichText(defaultRtfUrl: appConfig["baseUrl"]! + appConfig["defaultTourRtf"]!)
         txtTourInfo.attributedText = defaultRichText
         
         //instantiate the A/V Streamer
@@ -175,10 +174,60 @@ class TourViewController: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+
+    /* =========================================================================
+     this function loads configuration data from the configuration file
+     ======================================================================== */
+    func loadConfig() {
+        
+        // ---------------------- START CAMPUS MAP DATA ----------------------------
+        /*  Get image calibration information from the config file.
+         The data in this section is specific to the image file campus_map.png.
+         This file is 4538 × 3956 and 3,564,877 bytes.  Using a different campus
+         image file will require updating the config file ct_config.json. */
+        CAMPUS_IMG_SIZE_X = Double(appConfig["campusImageSizeX"]!)!  //4538
+        CAMPUS_IMG_SIZE_Y = Double(appConfig["campusImageSizeY"]!)!  //3956
+        
+        CAL_POINT1_X = Double(appConfig["campusImageCalPoint1X"]!)!     //540
+        CAL_POINT1_Y = Double(appConfig["campusImageCalPoint1Y"]!)!   //454
+        CAL_POINT1_LAT = Double(appConfig["campusImageCalPoint1Latitude"]!)!   //33.746832
+        CAL_POINT1_LON = Double(appConfig["campusImageCalPoint1Longitude"]!)!   //-84.413719
+
+        CAL_POINT2_X = Double(appConfig["campusImageCalPoint2X"]!)!   //3551
+        CAL_POINT2_Y = Double(appConfig["campusImageCalPoint2Y"]!)!   //2631
+        CAL_POINT2_LAT = Double(appConfig["campusImageCalPoint2Latitude"]!)!   //33.744402
+        CAL_POINT2_LON = Double(appConfig["campusImageCalPoint2Longitude"]!)!   //-84.409692
+
+        let SLOPEX = (CAL_POINT2_LON - CAL_POINT1_LON)/Double(CAL_POINT2_X - CAL_POINT1_X)
+        CAMPUS_LEFT_LONGITUDE = CAL_POINT1_LON + Double(0 - CAL_POINT1_X) * SLOPEX
+        CAMPUS_RIGHT_LONGITUDE = CAL_POINT1_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT1_X) * SLOPEX
+
+        let SLOPEY = (CAL_POINT2_LAT - CAL_POINT1_LAT)/Double(CAL_POINT2_Y - CAL_POINT1_Y)
+        CAMPUS_TOP_LATITUDE = CAL_POINT1_LAT + Double(0 - CAL_POINT1_Y) * SLOPEY
+        CAMPUS_BOTTOM_LATITUDE = CAL_POINT1_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT1_Y) * SLOPEY
     
+        CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
+        CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
+        
+        //load the default location from the config file (currently the Cosby parking lot)
+        DEFAULT_LOCATION = CLLocation(latitude:Double(appConfig["defaultLatitude"]!)!, longitude:Double(appConfig["defaultLongitude"]!)!)
+        
+        // ---------------------- END CAMPUS MAP DATA ------------------------------
+
+        
+        //---------- joystick controls constants ----------
+        JOYSTICK_X_INC = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/100
+        JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
+    }
+    
+    
+    
+    
+    
+
     
     /* =========================================================================
-     Thss is the gesture recognizer for the buildings image
+     This is the gesture recognizer for the buildings image
      ======================================================================== */
     @objc func handleImgBuildingsTap(recognizer: UITapGestureRecognizer) {
         
@@ -654,10 +703,10 @@ class TourViewController: UIViewController {
         let imageBottom = Double(imagePointSize.height-1)
         
         //interpolate x
-        let x = imageLeft + (coord.coordinate.longitude-TourViewController.CAMPUS_LEFT_LONGITUDE) * (imageRight - imageLeft)/(TourViewController.CAMPUS_RIGHT_LONGITUDE-TourViewController.CAMPUS_LEFT_LONGITUDE)
+        let x = imageLeft + (coord.coordinate.longitude - CAMPUS_LEFT_LONGITUDE) * (imageRight - imageLeft)/(CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)
         
         //interpolate y
-        let y = imageTop + (coord.coordinate.latitude-TourViewController.CAMPUS_TOP_LATITUDE) * (imageBottom - imageTop)/(TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)
+        let y = imageTop + (coord.coordinate.latitude - CAMPUS_TOP_LATITUDE) * (imageBottom - imageTop)/(CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)
         
         //print("(\(coord.coordinate.latitude)), \(coord.coordinate.longitude) -> (\(x), \(y))")
         return CGPoint(x:x, y:y)
@@ -676,11 +725,11 @@ class TourViewController: UIViewController {
         let imageBottom = Double(imagePointSize.height-1)
         
         //interpolate longitude (x)
-        let slopex = (TourViewController.CAMPUS_RIGHT_LONGITUDE - TourViewController.CAMPUS_LEFT_LONGITUDE)/(imageRight - imageLeft)
-        let lon = TourViewController.CAMPUS_LEFT_LONGITUDE + (Double(imgPointCoord.x) - imageLeft) * slopex
+        let slopex = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/(imageRight - imageLeft)
+        let lon = CAMPUS_LEFT_LONGITUDE + (Double(imgPointCoord.x) - imageLeft) * slopex
         
-        let slopey = (TourViewController.CAMPUS_BOTTOM_LATITUDE - TourViewController.CAMPUS_TOP_LATITUDE)/(imageBottom - imageTop)
-        let lat = TourViewController.CAMPUS_TOP_LATITUDE + (Double(imgPointCoord.y) - imageTop) * slopey
+        let slopey = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/(imageBottom - imageTop)
+        let lat = CAMPUS_TOP_LATITUDE + (Double(imgPointCoord.y) - imageTop) * slopey
         
         //print("(\(imgPointCoord.x), \(imgPointCoord.y)) -> (\(lat)), \(lon)")
         return CLLocation(latitude: lat, longitude: lon)
