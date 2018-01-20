@@ -42,7 +42,7 @@ class AboutViewController: UIViewController {
                 
                 //convert the data into an atrributed string
                 let richText = try NSAttributedString(data: data, options: [:], documentAttributes: nil)
-                
+
                 //display in the textfiled (which must be configured for attributed text, not plain text)
                 targetView.attributedText = richText
                 targetView.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
