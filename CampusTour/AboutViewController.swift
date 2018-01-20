@@ -45,6 +45,8 @@ class AboutViewController: UIViewController {
                 
                 //display in the textfiled (which must be configured for attributed text, not plain text)
                 targetView.attributedText = richText
+                targetView.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
+
             }   //do
             catch {
                 // contents could not be loaded

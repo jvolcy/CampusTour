@@ -124,6 +124,7 @@ class TourViewController: UIViewController {
         //pre-load the default RTF
         defaultRichText = getDefaultRichText(defaultRtfUrl: appConfig["baseUrl"]! + appConfig["defaultTourRtf"]!)
         txtTourInfo.attributedText = defaultRichText
+        txtTourInfo.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
         
         //instantiate the A/V Streamer
         AVStreamer = CAVStreamer()
@@ -316,6 +317,8 @@ class TourViewController: UIViewController {
         if poi != nil {
             //display the rich text
             txtTourInfo.attributedText = poi!.richText
+            txtTourInfo.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
+
             //displayAttributedTextFromURL(rtfFileUrl: poi!.rtf_url, targetView: txtTourInfo)
             
             //select the building layer with the name that mathes the poiID
@@ -351,6 +354,8 @@ class TourViewController: UIViewController {
             imgBuildings.image = UIImage(named:"NONE")
             displayTopLogo(coverTitleAndCheck: true)
             txtTourInfo.attributedText = defaultRichText
+            txtTourInfo.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
+
         }
         
         setMediaButtons()

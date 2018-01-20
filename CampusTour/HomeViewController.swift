@@ -94,8 +94,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         //select the second tab
         tabBarController?.selectedIndex = 1
         
-        //re-label the "Start Tour" button to "Re-start Tour"
-        btnStart.setTitle("Re-Start Tour", for: .normal)
+        //re-label the "Start Tour" button to "Start New Tour"
+        btnStart.setTitle("Start New Tour", for: .normal)
     }
     
 }
