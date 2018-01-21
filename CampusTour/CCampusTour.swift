@@ -24,8 +24,11 @@ class CCampusTour : NSObject {
     init(CtDataBaseUrl: String, CtPoiIndexFilename:String){
         super.init()
         
+        
+        let locationUpdateRateSec = Double(appConfig["locationUpdateRateSec"]!)!     //540
+        
         //instantiate the GPS lcoations services
-        ctLocationServices = CCTLocationServices(updateIntervalSec:4.0)
+        ctLocationServices = CCTLocationServices(updateIntervalSec:locationUpdateRateSec)
         
         //instantiate the POI manager
         poiManager = CPoiManager(CtDataBaseUrl:CtDataBaseUrl, CtPoiIndexFilename:CtPoiIndexFilename)
