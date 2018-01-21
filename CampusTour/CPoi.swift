@@ -66,11 +66,15 @@ class CPoi
     
     
     /* =========================================================================
-     this function attempts to load the RTF data from the provided rtf_url
+     this function attempts to load the RTF data from the provided rtf_url.
+     The RTF data is stored in richText.
+     If the rtf_url is "NONE", richText is set to nil.
      ======================================================================== */
     func loadRtfData() {
         //extract the data from the POI file and create an array of POIs.
         richText = nil  //set a default value
+        
+        if rtf_url == "NONE" {return}
         
         if let url = URL(string: rtf_url) {
             do {

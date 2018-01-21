@@ -25,7 +25,7 @@ class CCampusTour : NSObject {
         super.init()
         
         //instantiate the GPS lcoations services
-        ctLocationServices = CCTLocationServices(updateIntervalSec:2.0)
+        ctLocationServices = CCTLocationServices(updateIntervalSec:4.0)
         
         //instantiate the POI manager
         poiManager = CPoiManager(CtDataBaseUrl:CtDataBaseUrl, CtPoiIndexFilename:CtPoiIndexFilename)

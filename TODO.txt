@@ -14,3 +14,5 @@
 - need to create some hidden way to switch to debug mode
 
 - the tour picker on the home screen should be populated from an on-line source
+
+- location service update frequency needs to be a config parameter

@@ -117,8 +117,14 @@ class TourViewController: UIViewController {
             /* set the default location to the center of the map if we are in debug mode. */
             latestGpsLocation = DEFAULT_LOCATION
             setMarker(coord: latestGpsLocation)
-            vStackJoyStick.isHidden = false
             lblGpsCoord.isHidden = false
+        }
+        
+        if GPS_DebugMode == true {
+            vStackJoyStick.isHidden = false
+        }
+        else {
+            vStackJoyStick.isHidden = true
         }
         
         //pre-load the default RTF
@@ -264,8 +270,9 @@ class TourViewController: UIViewController {
         //ignore newly reported locations if GPS mode is off
         if gpsOn == false {return}
 
-        let coord:CLLocation = notification.object as! CLLocation
-        //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
+        //let coord = notification.object as! CLLocation
+
+        //print("*got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         print("$", terminator:"")
         
         /* ***** We need to check if this is the same POI *****  TO DO
@@ -281,10 +288,10 @@ class TourViewController: UIViewController {
          the new POI's media.  This amounts to ignoright the new POI for the time
          being. */
         
-        processNewLocation(coord: coord)
+        processNewLocation(coord: latestGpsLocation)
         
         //begin autoplay
-        if let poi = campusTour?.poiManager.getNearestPoiInRange(coord: coord) {
+        if let poi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
             if poi.status == .NotVisited {
                 poi.status = .Visited
                 playMedia(url: poi.video_url, outputView: viewTour)
@@ -1017,7 +1024,11 @@ class TourViewController: UIViewController {
      ======================================================================== */
     @IBAction func btnJoyMiddleTouchUpInside(_ sender: Any) {
         latestGpsLocation = CLLocation(latitude:CAMPUS_LATITUDE, longitude:CAMPUS_LONGITUDE)
-        //setMarker(coord: latestGpsLocation)
+        setMarker(coord: latestGpsLocation)
+        for poi in (campusTour?.poiManager.POIs)! {
+            let bearing = campusTour?.poiManager.poiBearingDegrees(fromLocation: latestGpsLocation, headingDegrees: 90.0, poi: poi)
+            print("poi:\(poi.poiID!) @ \(bearing!) degs.")
+        }
     }
     
 

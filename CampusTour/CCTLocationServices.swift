@@ -98,9 +98,9 @@ class CCTLocationServices: NSObject, CLLocationManagerDelegate {
         */
         
         
-        if SCCT_DebugMode == false {
+        if GPS_DebugMode == false {
             /* update the global GPS coordinates if we are not in
-            debug mode.  In debug mode, those coordinates are updated
+            GPS debug mode.  In debug mode, those coordinates are updated
             elsewhere. */
             latestGpsLocation = locations[locations.count - 1]
         }

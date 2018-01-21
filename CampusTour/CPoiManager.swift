@@ -272,6 +272,98 @@ class CPoiManager {
     }
 
     
+    /* =========================================================================
+     ======================================================================== */
+
+    func DegreesToRadians(_ degrees: Double ) -> Double {
+        return degrees * Double.pi / 180.0
+    }
+    
+    /* =========================================================================
+     ======================================================================== */
+    func RadiansToDegrees(_ radians: Double) -> Double {
+        return radians * 180.0 / Double.pi
+    }
+    
+    
+    /* =========================================================================
+     Function to calculate the bearing in radians of one CLLocation relative to
+     another.
+     Adapted from
+     https://stackoverflow.com/a/31817498
+     ======================================================================== */
+    func getBearingRadian(fromLocation:CLLocation, toLocation:CLLocation) -> Double {
+        
+        let lat1 = DegreesToRadians(fromLocation.coordinate.latitude)
+        let lon1 = DegreesToRadians(fromLocation.coordinate.longitude)
+        
+        let lat2 = DegreesToRadians(toLocation.coordinate.latitude);
+        let lon2 = DegreesToRadians(toLocation.coordinate.longitude);
+        
+        let dLon = lon2 - lon1
+        
+        let y = sin(dLon) * cos(lat2);
+        let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+        let radiansBearing = atan2(y, x)
+        
+        return radiansBearing
+    }
+    
+    /* =========================================================================
+     Function to calculate the bearing in degrees of one CLLocation relative to
+     another.
+     Adapted from
+     https://stackoverflow.com/a/31817498
+     ======================================================================== */
+    func getBearingDegrees(fromLocation:CLLocation, toLocation:CLLocation) -> Double{
+        return   getBearingRadian(fromLocation:fromLocation, toLocation:toLocation)
+    }
+
+    
+    /* =========================================================================
+     This function returns the bearing of a poi relative to an observer's
+     position and heading.
+     
+     radians heading
+               0
+               ^
+               |
+     3pi/2 <--- ---> pi/2
+               |
+               v
+               pi
+     ======================================================================== */
+    func poiBearingRadians (fromLocation:CLLocation, headingRadians:Double, poi:CPoi) -> Double {
+        //calculate the bearing relative to North
+        let northBearing = getBearingRadian(fromLocation: fromLocation, toLocation: poi.coord)
+        //now offset by the user's actual heading
+        let bearing = northBearing - headingRadians
+        
+        //we want a value between 0 and 2pi
+        //while bearing < 0 { bearing += 2*Double.pi}
+        
+        return bearing
+    }
+
+    /* =========================================================================
+     This function returns the bearing of a poi relative to an observer's
+     position and heading.
+     
+     degree heading
+               0
+               ^
+               |
+       270 <--- ---> 90
+               |
+               v
+              180
+     ======================================================================== */
+    func poiBearingDegrees (fromLocation:CLLocation, headingDegrees:Double, poi:CPoi) -> Double {
+        let bearing = poiBearingRadians(fromLocation: fromLocation, headingRadians: DegreesToRadians(headingDegrees), poi: poi)
+        return RadiansToDegrees(bearing)
+    }
+
+    
 }   //CPoiManager clasas
 
 

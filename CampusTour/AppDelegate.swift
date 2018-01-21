@@ -22,9 +22,13 @@ let CtConfigFileUrl = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/mas
 var CtPoiIndexFilename:String!  //filename for poi index data (read from config file)
 
 /* SCCT_DebugMode is a global boolean that switches between running in debug
- mode and regular mode.  In debug mode, the global GPS locations,
- latestGpsLocation, are simulated through the use of a virtual joystick. */
+ mode and regular mode. */
 var SCCT_DebugMode = true
+
+/*  GPS_DebugMode is a global boolean that switches between running in
+ GPS debug mode and regular mode.  In GPS debug mode, the global GPS locations,
+ latestGpsLocation, are simulated through the use of a virtual joystick.*/
+var GPS_DebugMode = false
 
 //create the application configuration dictionary.  Keys and arguments of the dictionary are both strings
 var appConfig = [String:String]()
