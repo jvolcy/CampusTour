@@ -25,7 +25,7 @@ class CCampusTour : NSObject {
         super.init()
         
         
-        let locationUpdateRateSec = Double(appConfig["locationUpdateRateSec"]!)!     //540
+        let locationUpdateRateSec = Double(appConfig["locationUpdateRateSec"]!)!
         
         //instantiate the GPS lcoations services
         ctLocationServices = CCTLocationServices(updateIntervalSec:locationUpdateRateSec)

@@ -15,4 +15,24 @@
 
 - the tour picker on the home screen should be populated from an on-line source
 
-- location service update frequency needs to be a config parameter
+- campus map needs to be rotated to reflect pedestrian heading
+
+- need to have multiple satellite coordinates w/ smaller radii for the same POI; POI file needs to have a new designation: "DO_NOT_EDIT" for satellite coordinates.  This designation would be used for the title and URLs.  Only the URL of the main POI should be used.
+
+- need to use the horizontalAccuracy: CLLocationAccuracy member of the CLLocation to change the transparency or image used by the marker
+
+- failure testing
+test when location is not available (or user declines)
+test when camera is not available (or user declines)
+test when network is not available
+test when GPS is not available
+test when compass/gyro is not available
+
+Rotate text to mark POIs in live view:
+https://stackoverflow.com/questions/28717634/swift-how-can-you-rotate-text-for-uibutton-and-uilabel
+
+Getting Heading and Course Information
+https://developer.apple.com/documentation/corelocation/getting_heading_and_course_information
+
+Core Motion
+https://developer.apple.com/documentation/coremotion

@@ -56,7 +56,8 @@ class TourViewController: UIViewController {
     
     //GPS status
     var gpsOn:Bool!
-    
+    private var gpsLastUpdateTime = 0.0
+
  
     // ---------------------- START CAMPUS MAP DATA ----------------------------
     /*  Get image calibration information from the config file.
@@ -94,6 +95,7 @@ class TourViewController: UIViewController {
     var JOYSTICK_X_INC:Double!
     var JOYSTICK_Y_INC:Double!
 
+    var bToggleMarkerImage = true
     
     /* =========================================================================
      ======================================================================== */
@@ -272,8 +274,33 @@ class TourViewController: UIViewController {
 
         //let coord = notification.object as! CLLocation
 
+        //****** this minimum update time should be a parameter or eventually eliminated
+        if Date.timeIntervalSinceReferenceDate - gpsLastUpdateTime < 0.25 {
+            //it's been less than 0.25 seconds.  Do nothing
+            return
+        }
+        
+        //mark the time of this update
+        gpsLastUpdateTime = Date.timeIntervalSinceReferenceDate
+        
         //print("*got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         print("$", terminator:"")
+        
+        
+        //if we are in debug mode, toggle the marker image everytime the GPS updates
+        /*
+        if SCCT_DebugMode == true
+        {
+            if bToggleMarkerImage == true {
+                imgMarker.image = UIImage(named: "Marker2_50px")
+            }
+            else {
+                imgMarker.image = UIImage(named: "Marker1_50px")
+            }
+            bToggleMarkerImage = !bToggleMarkerImage
+        }
+        */
+        
         
         /* ***** We need to check if this is the same POI *****  TO DO
         
@@ -752,11 +779,34 @@ class TourViewController: UIViewController {
      is in gps coordinates.
      ======================================================================== */
     func setMarker(coord:CLLocation) {
+        
+        //set the marker based on the accuracy of the GPS signal
+        //*** These limits should be set in the config file. ***
+        let accuracyInFeet = coord.horizontalAccuracy/0.3048
+        switch accuracyInFeet
+        {
+        case 0..<25:
+            imgMarker.image = UIImage(named: "marker1")
+        case 25..<50:
+            imgMarker.image = UIImage(named: "marker2")
+        case 50..<100:
+            imgMarker.image = UIImage(named: "marker3")
+        case 100..<200:
+            imgMarker.image = UIImage(named: "marker4")
+        default:
+            imgMarker.image = nil
+        }
+        
+        
         //draw the marker
         setMarkerOnImageView(marker:imgMarker, targetView: imgTourImage, targetLocation: gpsCoordToPoints(coord: coord))
         
         //update the label
-        lblGpsCoord.text = "(\(coord.coordinate.latitude), \(coord.coordinate.longitude))"
+        let lat = String(format: "%.6f", coord.coordinate.latitude)
+        let lon = String(format: "%.6f", coord.coordinate.longitude)
+        let accuracy = String(format: "%.1f", coord.horizontalAccuracy/0.3048)
+
+        lblGpsCoord.text = "(\(lat), \(lon)) [~\(accuracy)]"
     }
 
     /* =========================================================================
