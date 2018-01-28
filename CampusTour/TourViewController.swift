@@ -64,19 +64,29 @@ class TourViewController: UIViewController {
      The data in this section is specific to the image file campus_map.png.
      This file is 4538 × 3956 and 3,564,877 bytes.  Using a different campus
      image file will require updating the config file ct_config.json. */
-    var CAMPUS_IMG_SIZE_X:Double!     //4538
-    var CAMPUS_IMG_SIZE_Y:Double!   //3956
+    var CAMPUS_IMG_SIZE_X:Int!
+    var CAMPUS_IMG_SIZE_Y:Int!
     
-    var CAL_POINT1_X:Double!      //540
-    var CAL_POINT1_Y:Double!    //454
-    var CAL_POINT1_LAT:Double!    //33.746832
-    var CAL_POINT1_LON:Double!    //-84.413719
+    var CAL_POINT_NE_X:Int!
+    var CAL_POINT_NE_Y:Int!
+    var CAL_POINT_NE_LAT:Double!
+    var CAL_POINT_NE_LON:Double!
 
-    var CAL_POINT2_X:Double!    //3551
-    var CAL_POINT2_Y:Double!    //2631
-    var CAL_POINT2_LAT:Double!    //33.744402
-    var CAL_POINT2_LON:Double!    //-84.409692
-    
+    var CAL_POINT_NW_X:Int!
+    var CAL_POINT_NW_Y:Int!
+    var CAL_POINT_NW_LAT:Double!
+    var CAL_POINT_NW_LON:Double!
+
+    var CAL_POINT_SE_X:Int!
+    var CAL_POINT_SE_Y:Int!
+    var CAL_POINT_SE_LAT:Double!
+    var CAL_POINT_SE_LON:Double!
+
+    var CAL_POINT_SW_X:Int!
+    var CAL_POINT_SW_Y:Int!
+    var CAL_POINT_SW_LAT:Double!
+    var CAL_POINT_SW_LON:Double!
+
     var CAMPUS_LEFT_LONGITUDE:Double!
     var CAMPUS_RIGHT_LONGITUDE:Double!
     var CAMPUS_TOP_LATITUDE:Double!
@@ -96,12 +106,18 @@ class TourViewController: UIViewController {
     var JOYSTICK_Y_INC:Double!
 
     var bToggleMarkerImage = true
+    var campusImage:UIImage!
     
     /* =========================================================================
      ======================================================================== */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        campusImage = UIImage(named: "campus_map")
+        
+        CAMPUS_IMG_SIZE_X = Int(campusImage.size.width)
+        CAMPUS_IMG_SIZE_Y = Int(campusImage.size.height)
         
         //load configuration data
         loadConfig()
@@ -129,10 +145,20 @@ class TourViewController: UIViewController {
             vStackJoyStick.isHidden = true
         }
         
+        
+        print("campus image size = (\(CAMPUS_IMG_SIZE_X), \(CAMPUS_IMG_SIZE_Y))")
+        
         //pre-load the default RTF
         defaultRichText = getDefaultRichText(defaultRtfUrl: appConfig["baseUrl"]! + appConfig["defaultTourRtf"]!)
         txtTourInfo.attributedText = defaultRichText
         txtTourInfo.scrollRangeToVisible(NSMakeRange(0, 0)) //force scroll to the top
+        
+        print("imgBuildings pixel size = ", imgBuildings.intrinsicContentSize)
+        print("imgBuildings frame = ", imgBuildings.frame)
+        print("imgTourImage frame = ", imgTourImage.frame)
+        //print("viewTour.intrinsicContentSize = ", viewTour.intrinsicContentSize)
+        //imgTourImage.frame = CGRect(x: 0, y: 0, width: 400, height: 400)
+
         
         //instantiate the A/V Streamer
         AVStreamer = CAVStreamer()
@@ -172,7 +198,14 @@ class TourViewController: UIViewController {
                             name: locationServicesUpdatedLocations,
                             object: nil);
         
-        
+        /* sign up for notification from location services.  This notification
+         is a custom notification that tell us that a newly updated heading
+         is available */
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(gotNewHeadingFromLocationServices(_:)),
+                                               name: locationServicesUpdatedHeading,
+                                               object: nil);
+
         
     }
     
@@ -194,27 +227,56 @@ class TourViewController: UIViewController {
          The data in this section is specific to the image file campus_map.png.
          This file is 4538 × 3956 and 3,564,877 bytes.  Using a different campus
          image file will require updating the config file ct_config.json. */
-        CAMPUS_IMG_SIZE_X = Double(appConfig["campusImageSizeX"]!)!  //4538
-        CAMPUS_IMG_SIZE_Y = Double(appConfig["campusImageSizeY"]!)!  //3956
+        //CAMPUS_IMG_SIZE_X = Int(appConfig["campusImageSizeX"]!)!
+        //CAMPUS_IMG_SIZE_Y = Int(appConfig["campusImageSizeY"]!)!
+
+        CAL_POINT_NE_X = Int(appConfig["neCampusImageCalPointX"]!)!
+        CAL_POINT_NE_Y = Int(appConfig["neCampusImageCalPointY"]!)!
+        CAL_POINT_NE_LAT = Double(appConfig["neCampusImageCalPointLatitude"]!)!
+        CAL_POINT_NE_LON = Double(appConfig["neCampusImageCalPointLongitude"]!)!
+
+        CAL_POINT_SW_X = Int(appConfig["swCampusImageCalPointX"]!)!
+        CAL_POINT_SW_Y = Int(appConfig["swCampusImageCalPointY"]!)!
+        CAL_POINT_SW_LAT = Double(appConfig["swCampusImageCalPointLatitude"]!)!
+        CAL_POINT_SW_LON = Double(appConfig["swCampusImageCalPointLongitude"]!)!
         
-        CAL_POINT1_X = Double(appConfig["campusImageCalPoint1X"]!)!     //540
-        CAL_POINT1_Y = Double(appConfig["campusImageCalPoint1Y"]!)!   //454
-        CAL_POINT1_LAT = Double(appConfig["campusImageCalPoint1Latitude"]!)!   //33.746832
-        CAL_POINT1_LON = Double(appConfig["campusImageCalPoint1Longitude"]!)!   //-84.413719
+        CAL_POINT_NW_X = Int(appConfig["nwCampusImageCalPointX"]!)!
+        CAL_POINT_NW_Y = Int(appConfig["nwCampusImageCalPointY"]!)!
+        CAL_POINT_NW_LAT = Double(appConfig["nwCampusImageCalPointLatitude"]!)!
+        CAL_POINT_NW_LON = Double(appConfig["nwCampusImageCalPointLongitude"]!)!
 
-        CAL_POINT2_X = Double(appConfig["campusImageCalPoint2X"]!)!   //3551
-        CAL_POINT2_Y = Double(appConfig["campusImageCalPoint2Y"]!)!   //2631
-        CAL_POINT2_LAT = Double(appConfig["campusImageCalPoint2Latitude"]!)!   //33.744402
-        CAL_POINT2_LON = Double(appConfig["campusImageCalPoint2Longitude"]!)!   //-84.409692
+        CAL_POINT_SE_X = Int(appConfig["seCampusImageCalPointX"]!)!
+        CAL_POINT_SE_Y = Int(appConfig["seCampusImageCalPointY"]!)!
+        CAL_POINT_SE_LAT = Double(appConfig["seCampusImageCalPointLatitude"]!)!
+        CAL_POINT_SE_LON = Double(appConfig["seCampusImageCalPointLongitude"]!)!
+        
+        //calculate the left logitude based on the NE and SW cal points:
+        let SLOPEX_NESW = (CAL_POINT_SW_LON - CAL_POINT_NE_LON)/Double(CAL_POINT_SW_X - CAL_POINT_NE_X)
+        let CAMPUS_LEFT_LONGITUDE_NESW = CAL_POINT_NE_LON + Double(0 - CAL_POINT_NE_X) * SLOPEX_NESW
+        let CAMPUS_RIGHT_LONGITUDE_NESW = CAL_POINT_NE_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT_NE_X) * SLOPEX_NESW
 
-        let SLOPEX = (CAL_POINT2_LON - CAL_POINT1_LON)/Double(CAL_POINT2_X - CAL_POINT1_X)
-        CAMPUS_LEFT_LONGITUDE = CAL_POINT1_LON + Double(0 - CAL_POINT1_X) * SLOPEX
-        CAMPUS_RIGHT_LONGITUDE = CAL_POINT1_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT1_X) * SLOPEX
+        //calculate the top and bottom latitudes based on the NE and SW cal points
+        let SLOPEY_NESW = (CAL_POINT_SW_LAT - CAL_POINT_NE_LAT)/Double(CAL_POINT_SW_Y - CAL_POINT_NE_Y)
+        let CAMPUS_TOP_LATITUDE_NESW = CAL_POINT_NE_LAT + Double(0 - CAL_POINT_NE_Y) * SLOPEY_NESW
+        let CAMPUS_BOTTOM_LATITUDE_NESW = CAL_POINT_NE_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT_NE_Y) * SLOPEY_NESW
+        
+        //calculate the left logitude based on the NW and SE cal points:
+        let SLOPEX_NWSE = (CAL_POINT_SE_LON - CAL_POINT_NW_LON)/Double(CAL_POINT_SE_X - CAL_POINT_NW_X)
+        let CAMPUS_LEFT_LONGITUDE_NWSE = CAL_POINT_NW_LON + Double(0 - CAL_POINT_NW_X) * SLOPEX_NWSE
+        let CAMPUS_RIGHT_LONGITUDE_NWSE = CAL_POINT_NW_LON +  Double(CAMPUS_IMG_SIZE_X - CAL_POINT_NW_X) * SLOPEX_NWSE
+        
+        //calculate the top and bottom latitudes based on the NW and SE cal points
+        let SLOPEY_NWSE = (CAL_POINT_SE_LAT - CAL_POINT_NW_LAT)/Double(CAL_POINT_SE_Y - CAL_POINT_NW_Y)
+        let CAMPUS_TOP_LATITUDE_NWSE = CAL_POINT_NW_LAT + Double(0 - CAL_POINT_NW_Y) * SLOPEY_NWSE
+        let CAMPUS_BOTTOM_LATITUDE_NWSE = CAL_POINT_NW_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT_NW_Y) * SLOPEY_NWSE
 
-        let SLOPEY = (CAL_POINT2_LAT - CAL_POINT1_LAT)/Double(CAL_POINT2_Y - CAL_POINT1_Y)
-        CAMPUS_TOP_LATITUDE = CAL_POINT1_LAT + Double(0 - CAL_POINT1_Y) * SLOPEY
-        CAMPUS_BOTTOM_LATITUDE = CAL_POINT1_LAT + Double(CAMPUS_IMG_SIZE_Y - CAL_POINT1_Y) * SLOPEY
-    
+        //calculate the average left, right longitudes and top, bottom latitudes
+        CAMPUS_LEFT_LONGITUDE = (CAMPUS_LEFT_LONGITUDE_NESW + CAMPUS_LEFT_LONGITUDE_NWSE) / 2
+        CAMPUS_RIGHT_LONGITUDE = (CAMPUS_RIGHT_LONGITUDE_NESW + CAMPUS_RIGHT_LONGITUDE_NWSE) / 2
+        CAMPUS_TOP_LATITUDE = (CAMPUS_TOP_LATITUDE_NESW + CAMPUS_TOP_LATITUDE_NWSE) / 2
+        CAMPUS_BOTTOM_LATITUDE = (CAMPUS_BOTTOM_LATITUDE_NESW + CAMPUS_BOTTOM_LATITUDE_NWSE) / 2
+        
+        //calculate the coordinates of the approximate center of the campus
         CAMPUS_LATITUDE = (CAMPUS_TOP_LATITUDE+CAMPUS_BOTTOM_LATITUDE)/2
         CAMPUS_LONGITUDE = (CAMPUS_LEFT_LONGITUDE+CAMPUS_RIGHT_LONGITUDE)/2
         
@@ -261,7 +323,21 @@ class TourViewController: UIViewController {
             //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         }
     }
-    
+
+    /* =========================================================================
+     CLLocationManagerDelegate:didUpdateHeading delegate
+     ======================================================================== */
+    @objc func gotNewHeadingFromLocationServices(_ notification: Notification){
+        
+        let newHeading = notification.object as! CLHeading
+        
+        let headingRad = -newHeading.trueHeading * Double.pi / 180.0
+        
+        //campusImage.
+        imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+        imgBuildings.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+    }
+
 
     /* =========================================================================
      newly updated GPS coordinate notifications callback function.  The
@@ -930,14 +1006,14 @@ class TourViewController: UIViewController {
         case .map:
             //image = UIImage(named: "film")
             tour_image = UIImage(named: "campus_map")
-            imgTourImage.contentMode = .scaleAspectFit
+            //imgTourImage.contentMode = .scaleAspectFit
             imgBuildings.isHidden = false
             imgMarker.isHidden = false
             self.tourMode = .map
         case .walk:
             //image = UIImage(named: "map")
             tour_image = UIImage(named: "default_arch")
-            imgTourImage.contentMode = .scaleAspectFill
+            //imgTourImage.contentMode = .scaleAspectFill
             imgBuildings.isHidden = true
             imgMarker.isHidden = true
             self.tourMode = .walk

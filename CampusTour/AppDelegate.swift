@@ -18,9 +18,6 @@ var latestGpsLocation = CLLocation()
 //config file
 let CtConfigFileUrl = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/ct_config.json"
 
-//var CtDataBaseUrl:String!       //global base URL and for CT data (read from config file)
-var CtPoiIndexFilename:String!  //filename for poi index data (read from config file)
-
 /* SCCT_DebugMode is a global boolean that switches between running in debug
  mode and regular mode. */
 var SCCT_DebugMode = true
@@ -76,17 +73,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //first thing we have to do is read the configuration file for the application
         readConfigFile(fileUrl: CtConfigFileUrl)
 
-        /*
+        
         print("***** Config Data *****")
         for item in appConfig {
             print("\(item.key) = \(item.value)")
         }
         print("***********************")
-        */
         
-        //CtDataBaseUrl = appConfig["baseUrl"]
-        CtPoiIndexFilename = appConfig["poiIndexFile"]
         
+        let CtPoiIndexFilename = appConfig["poiIndexFile"]!  //filename for poi index data (read from config file)
+
         // Override point for customization after application launch.
         //print("CFBundleVersion", Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
         //print("CFBundleShortVersionString", Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)

@@ -139,10 +139,10 @@
                                     <view clipsSubviews="YES" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="i2u-Xl-FUP" userLabel="viewTour">
                                         <rect key="frame" x="0.0" y="70" width="375" height="352"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_arch" translatesAutoresizingMaskIntoConstraints="NO" id="TjP-PV-HJG" userLabel="imgTourImage">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
                                             </imageView>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NONE" translatesAutoresizingMaskIntoConstraints="NO" id="Y6e-OM-ZYe" userLabel="imgBuildings">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NONE" translatesAutoresizingMaskIntoConstraints="NO" id="Y6e-OM-ZYe" userLabel="imgBuildings">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="352"/>
                                             </imageView>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="marker1" translatesAutoresizingMaskIntoConstraints="NO" id="c5s-mO-cMm" userLabel="imgMarker">
@@ -472,7 +472,7 @@
     </scenes>
     <resources>
         <image name="Giles-Hall-on-the-Spelman-College-Campus" width="1200" height="900"/>
-        <image name="NONE" width="1135" height="989"/>
+        <image name="NONE" width="1770" height="1770"/>
         <image name="about" width="36" height="36"/>
         <image name="default_arch" width="645" height="462"/>
         <image name="gps_on" width="385" height="159"/>

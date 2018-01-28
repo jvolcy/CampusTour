@@ -61,6 +61,7 @@ import CoreLocation
 
 //create a new global notification name for new GPS data
 let locationServicesUpdatedLocations = NSNotification.Name ("locationServicesUpdatedLocations")
+let locationServicesUpdatedHeading = NSNotification.Name("locationServicesUpdatedHeading")
 
 class CCTLocationServices: NSObject, CLLocationManagerDelegate {
     private var locationManager : CLLocationManager!
@@ -69,20 +70,45 @@ class CCTLocationServices: NSObject, CLLocationManagerDelegate {
     
     init (updateIntervalSec:Double) {
         super.init()
-        
-        //create the locationManager
-        locationManager = CLLocationManager()
-        //set the desired location accuracy to max
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        //assign the delegate
-        locationManager.delegate = self
-        //get user permission to use location services
-        locationManager.requestWhenInUseAuthorization()
+
+        if CLLocationManager.locationServicesEnabled() {
+            
+            //create the locationManager
+            locationManager = CLLocationManager()
+            //set the desired location accuracy to max
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            //assign the delegate
+            locationManager.delegate = self
+            //get user permission to use location services
+            locationManager.requestWhenInUseAuthorization()
+
+            if CLLocationManager.headingAvailable() == true {
+                locationManager.startUpdatingHeading()
+            }
+            else {      //if CLLocationManager.headingAvailable() == true
+                print ("Cannot use the compass.")
+            }
+        }
+        else {      //if CLLocationManager.locationServicesEnabled()
+            print ("location services not enabled.")
+            return
+        }
+
         
         //setup the timer
         startTimer(updateIntervalSec: updateIntervalSec)
     }
 
+    /* =========================================================================
+     CLLocationManagerDelegate:didUpdateHeading delegate
+     ======================================================================== */
+    func locationManager(_ manager: CLLocationManager,
+                         didUpdateHeading newHeading: CLHeading) {
+        
+        NotificationCenter.default.post(name: locationServicesUpdatedHeading, object: newHeading)
+    }
+
+    
     /* =========================================================================
      CLLocationManagerDelegate:didUpdateLocations delegate
      ======================================================================== */
