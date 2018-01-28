@@ -174,14 +174,13 @@ class TourViewController: UIViewController {
         //default to logo display
         displayTopLogo(coverTitleAndCheck: true)
         
-        //add a tap gesture recognizer to the building image
-        let imgBuildingGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleImgBuildingsTap(recognizer:)))
+        //add a tap gesture recognizer to the viewTour view
+        let viewTourGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleviewTourTap(recognizer:)))
         
-        //imgBuildings.addGestureRecognizer(imgBuildingGestureRecognizer)
-        viewTour.addGestureRecognizer(imgBuildingGestureRecognizer)
-        imgBuildingGestureRecognizer.numberOfTapsRequired = 1
-        imgBuildingGestureRecognizer.numberOfTouchesRequired = 1
-        imgBuildings.isUserInteractionEnabled = true
+        viewTour.addGestureRecognizer(viewTourGestureRecognizer)
+        viewTourGestureRecognizer.numberOfTapsRequired = 1
+        viewTourGestureRecognizer.numberOfTouchesRequired = 1
+        //viewTour.isUserInteractionEnabled = true
 
         
         /* register for notification when an AVPalerItem has finished playing.  Note that
@@ -293,16 +292,99 @@ class TourViewController: UIViewController {
         JOYSTICK_Y_INC = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/100
     }
     
+    /* =========================================================================
+     This function transforms x-y coordinates from the imgTour or
+     imgBuildings image coordinate system to the viewTour coordinate systems.
+     The function assumes that the campus and building images are square
+     (aspect ratio = 1.0) and that they are "aspect filled" in the viewTour
+     frame.  As such, either the width or height of the scaled image will
+     match that of the frame.  When the image width fills the frame, the height
+     will be vertically off-centered by 1/2 the difference between the frame
+     height and the image height.  Likewise, when the image height fills
+     the frame, the width will be horizontally off-center by 1/2 the
+     difference between the frame and image width.
+     This observation is used to translate the image coordinates
+     to frame coordinates.
+     ======================================================================== */
+    func imgTourToViewTourXform(imgPoint:CGPoint) -> CGPoint {
+        /* we need the location in the image coordinate, not the frame.
+         begin by setting the image coordinates to the frame coordinates.
+         Then we will shift this as described in the function comment. */
+        var locationInViewTour = imgPoint
+        
+        //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
+        let imageFrameSize = viewTour.frame.size
+        //assume that the image size is a square with dimensions equal to the
+        //greater of the frame width or frame height.
+        if imageFrameSize.width > imageFrameSize.height {
+            //in this case, the height is clipped (the image fills the frame horizontally)
+            let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
+            //shift the y coordinate down
+            locationInViewTour.y -= clipped_region
+        }
+        else {
+            //in this csse, the width is clipped (the image fills the frame vertically)
+            let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
+            //shift the x coordinate to the right
+            locationInViewTour.x -= clipped_region
+        }
+        
+        return locationInViewTour
+        
+    }
+    /* =========================================================================
+     ======================================================================== */
     
     
-    
-    
+    /* =========================================================================
+     This function transforms x-y coordinates from the viewTour frame
+     coordinate system to the imgTour or imgBuildings coordinate systems.
+     The function assumes that the campus and building images are square
+     (aspect ratio = 1.0) and that they are "aspect filled" in the viewTour
+     frame.  As such, either the width or height of the scaled image will
+     match that of the frame.  When the image width fills the frame, the height
+     will be vertically off-centered by 1/2 the difference between the frame
+     height and the image height.  Likewise, when the image height fills
+     the frame, the width will be horizontally off-center by 1/2 the
+     difference between the frame and image width.
+     This observation is used to translate the frame coordinates
+     to image coordinates.
+     ======================================================================== */
+    func viewTourToImgTourXform(viewPoint:CGPoint) -> CGPoint {
+        /* we need the location in the image coordinate, not the frame.
+         begin by setting the image coordinates to the frame coordinates.
+         Then we will shift this as described in the function comment. */
+        var locationInTargetImg = viewPoint
+        
+        //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
+        let imageFrameSize = viewTour.frame.size
+        //assume that the image size is a square with dimensions equal to the
+        //greater of the frame width or frame height.
+        if imageFrameSize.width > imageFrameSize.height {
+            //in this case, the height is clipped (the image fills the frame horizontally)
+            let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
+            //shift the y coordinate down
+            locationInTargetImg.y += clipped_region
+        }
+        else {
+            //in this csse, the width is clipped (the image fills the frame vertically)
+            let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
+            //shift the x coordinate to the right
+            locationInTargetImg.x += clipped_region
+        }
+        
+        return locationInTargetImg
+
+    }
 
     
     /* =========================================================================
-     This is the gesture recognizer for the buildings image
+     This is the viewTour gesture recognizer for the viewTour view.
+     The gesture recognizer object contains the location of the touch in
+     the viewTour coordinate system.  This has to be translated to the image
+     coordinate system before being used.
      ======================================================================== */
-    @objc func handleImgBuildingsTap(recognizer: UITapGestureRecognizer) {
+    @objc func handleviewTourTap(recognizer: UITapGestureRecognizer) {
         
         //ignore taps if GPS is on
         if gpsOn == true {return}
@@ -310,51 +392,19 @@ class TourViewController: UIViewController {
         //react only when the tap ends
         if recognizer.state == .ended {
             //the location in the image target frame is returned by handleImgBuildingsTap
-            let locationInTargetImgFrame = recognizer.location(in: imgBuildings /*recognizer.view*/)
+            let locationInTargetImgFrame = recognizer.location(in: imgTourImage)
 
-            //print("locationInTargetImgFrame = \(locationInTargetImgFrame)")
+            // we need the location in the image coordinate, not the frame.
+            let locationInTargetImg = viewTourToImgTourXform(viewPoint: locationInTargetImgFrame)
+            
+            let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
 
-//***************
-            var shiftedImgPointCoord = locationInTargetImgFrame
-            
-            //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
-            let imageFrameSize = viewTour.frame.size
-            if imageFrameSize.width > imageFrameSize.height {
-                //in this case, the height is clipped
-                let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
-                shiftedImgPointCoord.y += clipped_region
-            }
-            else {
-                //in this csse, the width is clipped
-                let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
-                shiftedImgPointCoord.x += clipped_region
-            }
-            
-            print("locationInTargetImgFrame = \(locationInTargetImgFrame), shiftedImgPointCoord=\(shiftedImgPointCoord)")
-
-//***************
-
-            
-            //now we need the offset of the image in the frame
-            let targetImgOrigin = getImageOffsetInImageView(imageView: imgBuildings /*recognizer.view as! UIImageView*/)
-            
-            let locationInTargetImg = CGPoint(x: locationInTargetImgFrame.x - targetImgOrigin.x, y:locationInTargetImgFrame.y - targetImgOrigin.y)
-            
-            //let center = CGPoint(x:viewTour.frame.midX, y:viewTour.frame.midY)
-            
-            //let locationInTargetImg = rotateCoord(point: locationInTargetImgFrame, aboutPoint: center, byThisManyRads: headingRad)
-            
-            //print("location in campus image = \(locationInTargetImg)")
-
-            //let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImgFrame)
-            let coord = pointsToGpsCoord(imgPointCoord: shiftedImgPointCoord)
-
-            print("## (\(locationInTargetImg) -> \(coord.coordinate.latitude), \(coord.coordinate.longitude))")
+            //print("## \(locationInTargetImgFrame) -> \(locationInTargetImg) -> \(coord.coordinate.latitude), \(coord.coordinate.longitude)")
             latestGpsLocation =  coord
             setMarker(coord: coord)
             
             processNewLocation(coord: coord)
-        }
+        }   //if recognizer.state == .ended
     }
 
     /* =========================================================================
@@ -365,10 +415,12 @@ class TourViewController: UIViewController {
         let newHeading = notification.object as! CLHeading
         
         headingRad = -newHeading.trueHeading * Double.pi / 180.0
-        
-        //campusImage.
-        imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
-        imgBuildings.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+   
+        if tourMode == .map {
+            //campusImage.
+            imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+            imgBuildings.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+        }
     }
 
 
@@ -872,39 +924,12 @@ class TourViewController: UIViewController {
         let imageRight = Double(imagePointSize.width-1)
         let imageBottom = Double(imagePointSize.height-1)
         
-/*
-        print("xxxxxxxx imagePointSize= \(imagePointSize)")
-
-        var shiftedImgPointCoord = imgPointCoord
-        
-        //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
-        let imageFrameSize = viewTour.frame.size
-        if imageFrameSize.width > imageFrameSize.height {
-            //in this case, the height is clipped
-            let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
-            shiftedImgPointCoord.y -= clipped_region
-        }
-        else {
-            //in this csse, the width is clipped
-            let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
-            shiftedImgPointCoord.x -= clipped_region
-        }
-
-        
-        let center = CGPoint(x:imgTourImage.bounds.midX, y:imgTourImage.bounds.midY)
-        
-        //unrotate the point
-        let rotated_point = rotateCoord(point: imgPointCoord, aboutPoint: center, byThisManyRads: headingRad)
- */
-        
         //interpolate longitude (x)
         let slopex = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/(imageRight - imageLeft)
         let lon = CAMPUS_LEFT_LONGITUDE + (Double(imgPointCoord.x) - imageLeft) * slopex
-        //let lon = CAMPUS_LEFT_LONGITUDE + (Double(shiftedImgPointCoord.x) - imageLeft) * slopex
         
         let slopey = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/(imageBottom - imageTop)
         let lat = CAMPUS_TOP_LATITUDE + (Double(imgPointCoord.y) - imageTop) * slopey
-        //let lat = CAMPUS_TOP_LATITUDE + (Double(shiftedImgPointCoord.y) - imageTop) * slopey
         
         //print("(\(imgPointCoord.x), \(imgPointCoord.y)) -> (\(lat)), \(lon)")
         return CLLocation(latitude: lat, longitude: lon)
@@ -933,7 +958,6 @@ class TourViewController: UIViewController {
             imgMarker.image = nil
         }
         
-        
         //draw the marker
         setMarkerOnImageView(marker:imgMarker, targetView: imgTourImage, targetLocation: gpsCoordToPoints(coord: coord))
         
@@ -959,12 +983,9 @@ class TourViewController: UIViewController {
      ======================================================================== */
     func setMarkerOnImageView(marker:UIView, targetView:UIImageView, targetLocation:CGPoint){
         
-        let targetImgOrigin = getImageOffsetInImageView(imageView: targetView)
+        let rotated_loc = rotateCoord(point: targetLocation, aboutPoint: CGPoint(x:viewTour.frame.midX, y:viewTour.frame.midY), byThisManyRads: headingRad)
         
-        //translate the point to put it in frame coordinates
-        let targetLocationInFrameCoord = CGPoint(x:targetLocation.x + targetImgOrigin.x, y:targetLocation.y + targetImgOrigin.y)
-        
-        //print(targetLocation, targetLocationInFrameCoord)
+        let targetLocationInFrameCoord = imgTourToViewTourXform(imgPoint: rotated_loc)
         
         //draw the marker at the offset position
         marker.center = CGPoint(x:targetLocationInFrameCoord.x,  y:targetLocationInFrameCoord.y)
@@ -974,103 +995,24 @@ class TourViewController: UIViewController {
     /* =========================================================================
      Given a UIImageView object, this function attempts to calculate the
      size of the image in the view in points.
-     The function is intended to work on images that are "aspect fitted" in
-     their frame.  In other words, the entire aspect-preserved image must
-     be displayed for the coordinate transforms to work properly.
-     "aspect-fitted" images often have blank border on the left and right or
-     on top and bottom, depending on which dimension limits the size of the
-     image in its frame.  This function handles both cases and returns the
-     image size as a CGSize.
+     The function is intended to work on square images that are "aspect filled"
+     in their frame.  For such images, the height and width are the same.
+     Further, each is equal to the learger of the frame's height and width.
      ======================================================================== */
     func getImagePointSizeInImageView(imageView:UIImageView) -> CGSize {
 
         //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
         let imageFrameSize = viewTour.frame.size
         if imageFrameSize.width > imageFrameSize.height {
-            //in this case, the height is clipped
+            //in this case, the height is clipped.  The image is width x width
             return CGSize(width: imageFrameSize.width, height: imageFrameSize.width)
         }
         else {
-            //in this csse, the width is clipped
+            //in this csse, the width is clipped.  The image is height x height
             return CGSize(width: imageFrameSize.height, height: imageFrameSize.height)
         }
-
-        /*
-        let imagePixelSize = imageView.image!.size
-        //let imageFrameSize = imageView.frame.size
-        let imageFrameSize = viewTour.frame.size
-        let imageAR = imagePixelSize.width/imagePixelSize.height
-        let imageFrameAR = imageView.frame.width/imageView.frame.height
-        
-        //print("$$$$ imagePixelSize=\(imagePixelSize), imageFrameSize=\(imageFrameSize), imageAR=\(imageAR), imageFrameAR=\(imageFrameAR)")
-        print("$$$$ imageFrameSize=\(imageFrameSize)")
-        
-        var imagePointSize = CGSize()
-        //determine the location of the image relative to its super view
-        if imageFrameAR < imageAR {
-            //print("limited by width, aspect fill will fill the height (width clipped)")
-            imagePointSize.height = imageFrameSize.height
-            imagePointSize.width = imagePointSize.height*imagePixelSize.width/imagePixelSize.height
-            //print(imagePointSize)
-        }
-        else {
-            //print("limited by height, aspect fill will fill the width (height clipped)")
-            imagePointSize.width = imageFrameSize.width
-            imagePointSize.height = imagePointSize.width*imagePixelSize.height/imagePixelSize.width
-            //print(imagePointSize)
-        }
-        return imagePointSize
-         */
     }
     
-    
-    /* =========================================================================
-     Given a UIImageView object, this function attempts to calculate the
-     X-Y offset of the image in the view.
-     The function is intended to work on images that are "aspect fitted" in
-     their frame.  In other words, the entire aspect-preserved image must
-     be displayed for the coordinate transforms to work properly.
-     "aspect-fitted" images often have blank border on the left and right or
-     on top and bottom, depending on which dimension limits the size of the
-     image in its frame.  This function handles both cases and returns the
-     offset of the image as a CGPoint.
-     ======================================================================== */
-    func getImageOffsetInImageView(imageView:UIImageView) -> CGPoint {
-        let imageFrameSize = imageView.frame.size
-        let imagePointSize = getImagePointSizeInImageView(imageView: imageView)
-        let imageOrigin = CGPoint(x:(imageFrameSize.width-imagePointSize.width)/2, y:(imageFrameSize.height-imagePointSize.height)/2)
-        
-        return imageOrigin
-    }
-    
-    /* =========================================================================
-     From Stack Exchange
-     https://stackoverflow.com.mevn.nethttp://stackoverflow.com.mevn.net/a/34461183
-     
-     This function attempts to report the RGBA value of the pixel under a
-     point on a view.  The point is passed in as a CGPoint object and the
-     view is a UIView object.  While the function returns an alpha value,
-     this value seems to always be 255.  Oddly, when the actual value of the
-     alpha channel is not 255 (255-opaque), the RGB value returned is the
-     composite color of the translucent layer and the background.  In such
-     cases, the alpha value is still reported as 255.
-     ======================================================================== */
-    func getPixelColorAtPoint(point:CGPoint, sourceView: UIView) -> UIColor {
-        let pixel=UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: 4)
-        let colorSpace=CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo=CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
-        let context=CGContext(data: pixel, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue)
-        var color: UIColor?=nil
-        if let context=context {
-            context.translateBy(x: -point.x, y: -point.y)
-            sourceView.layer.render(in: context)
-            color=UIColor(red: CGFloat(pixel[0])/255.0,green: CGFloat(pixel[1])/255.0,blue: CGFloat(pixel[2])/255.0,alpha: CGFloat(pixel[3])/255.0)
-            pixel.deallocate(capacity: 4)
-            
-        }
-        return color!
-        
-    }
 
     /* =========================================================================
      ======================================================================== */
@@ -1085,6 +1027,8 @@ class TourViewController: UIViewController {
             //image = UIImage(named: "film")
             tour_image = UIImage(named: "campus_map")
             //imgTourImage.contentMode = .scaleAspectFit
+            imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+            imgBuildings.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
             imgBuildings.isHidden = false
             imgMarker.isHidden = false
             self.tourMode = .map
@@ -1092,6 +1036,8 @@ class TourViewController: UIViewController {
             //image = UIImage(named: "map")
             tour_image = UIImage(named: "default_arch")
             //imgTourImage.contentMode = .scaleAspectFill
+            imgTourImage.transform = CGAffineTransform(rotationAngle:0)
+            imgBuildings.transform = CGAffineTransform(rotationAngle:0)
             imgBuildings.isHidden = true
             imgMarker.isHidden = true
             self.tourMode = .walk

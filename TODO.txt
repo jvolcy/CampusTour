@@ -38,5 +38,5 @@ Core Motion
 https://developer.apple.com/documentation/coremotion
 
 ****************************
-The function getImageOffsetInImageView() probably needs work
-
+-Horizontal operation not working with compass or marker;  may disable.
+-Play button does not work properly when GPS is off
