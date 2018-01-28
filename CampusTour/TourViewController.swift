@@ -57,7 +57,8 @@ class TourViewController: UIViewController {
     //GPS status
     var gpsOn:Bool!
     private var gpsLastUpdateTime = 0.0
-
+    
+    var headingRad = 0.0    //the current heading
  
     // ---------------------- START CAMPUS MAP DATA ----------------------------
     /*  Get image calibration information from the config file.
@@ -176,7 +177,8 @@ class TourViewController: UIViewController {
         //add a tap gesture recognizer to the building image
         let imgBuildingGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleImgBuildingsTap(recognizer:)))
         
-        imgBuildings.addGestureRecognizer(imgBuildingGestureRecognizer)
+        //imgBuildings.addGestureRecognizer(imgBuildingGestureRecognizer)
+        viewTour.addGestureRecognizer(imgBuildingGestureRecognizer)
         imgBuildingGestureRecognizer.numberOfTapsRequired = 1
         imgBuildingGestureRecognizer.numberOfTouchesRequired = 1
         imgBuildings.isUserInteractionEnabled = true
@@ -310,19 +312,44 @@ class TourViewController: UIViewController {
             //the location in the image target frame is returned by handleImgBuildingsTap
             let locationInTargetImgFrame = recognizer.location(in: imgBuildings /*recognizer.view*/)
 
-            //print("recognizer.location(in: imgBuildings) = \(recognizer.location(in: imgBuildings))")
+            //print("locationInTargetImgFrame = \(locationInTargetImgFrame)")
 
+//***************
+            var shiftedImgPointCoord = locationInTargetImgFrame
+            
+            //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
+            let imageFrameSize = viewTour.frame.size
+            if imageFrameSize.width > imageFrameSize.height {
+                //in this case, the height is clipped
+                let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
+                shiftedImgPointCoord.y += clipped_region
+            }
+            else {
+                //in this csse, the width is clipped
+                let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
+                shiftedImgPointCoord.x += clipped_region
+            }
+            
+            print("locationInTargetImgFrame = \(locationInTargetImgFrame), shiftedImgPointCoord=\(shiftedImgPointCoord)")
+
+//***************
+
+            
             //now we need the offset of the image in the frame
             let targetImgOrigin = getImageOffsetInImageView(imageView: imgBuildings /*recognizer.view as! UIImageView*/)
             
             let locationInTargetImg = CGPoint(x: locationInTargetImgFrame.x - targetImgOrigin.x, y:locationInTargetImgFrame.y - targetImgOrigin.y)
             
-            print("location in campus image = \(locationInTargetImg)")
+            //let center = CGPoint(x:viewTour.frame.midX, y:viewTour.frame.midY)
+            
+            //let locationInTargetImg = rotateCoord(point: locationInTargetImgFrame, aboutPoint: center, byThisManyRads: headingRad)
+            
+            //print("location in campus image = \(locationInTargetImg)")
 
-            let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
             //let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImgFrame)
+            let coord = pointsToGpsCoord(imgPointCoord: shiftedImgPointCoord)
 
-            //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
+            print("## (\(locationInTargetImg) -> \(coord.coordinate.latitude), \(coord.coordinate.longitude))")
             latestGpsLocation =  coord
             setMarker(coord: coord)
             
@@ -337,7 +364,7 @@ class TourViewController: UIViewController {
         
         let newHeading = notification.object as! CLHeading
         
-        let headingRad = -newHeading.trueHeading * Double.pi / 180.0
+        headingRad = -newHeading.trueHeading * Double.pi / 180.0
         
         //campusImage.
         imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
@@ -845,12 +872,39 @@ class TourViewController: UIViewController {
         let imageRight = Double(imagePointSize.width-1)
         let imageBottom = Double(imagePointSize.height-1)
         
+/*
+        print("xxxxxxxx imagePointSize= \(imagePointSize)")
+
+        var shiftedImgPointCoord = imgPointCoord
+        
+        //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
+        let imageFrameSize = viewTour.frame.size
+        if imageFrameSize.width > imageFrameSize.height {
+            //in this case, the height is clipped
+            let clipped_region = (imageFrameSize.width - imageFrameSize.height) / 2
+            shiftedImgPointCoord.y -= clipped_region
+        }
+        else {
+            //in this csse, the width is clipped
+            let clipped_region = (imageFrameSize.height - imageFrameSize.width) / 2
+            shiftedImgPointCoord.x -= clipped_region
+        }
+
+        
+        let center = CGPoint(x:imgTourImage.bounds.midX, y:imgTourImage.bounds.midY)
+        
+        //unrotate the point
+        let rotated_point = rotateCoord(point: imgPointCoord, aboutPoint: center, byThisManyRads: headingRad)
+ */
+        
         //interpolate longitude (x)
         let slopex = (CAMPUS_RIGHT_LONGITUDE - CAMPUS_LEFT_LONGITUDE)/(imageRight - imageLeft)
         let lon = CAMPUS_LEFT_LONGITUDE + (Double(imgPointCoord.x) - imageLeft) * slopex
+        //let lon = CAMPUS_LEFT_LONGITUDE + (Double(shiftedImgPointCoord.x) - imageLeft) * slopex
         
         let slopey = (CAMPUS_BOTTOM_LATITUDE - CAMPUS_TOP_LATITUDE)/(imageBottom - imageTop)
         let lat = CAMPUS_TOP_LATITUDE + (Double(imgPointCoord.y) - imageTop) * slopey
+        //let lat = CAMPUS_TOP_LATITUDE + (Double(shiftedImgPointCoord.y) - imageTop) * slopey
         
         //print("(\(imgPointCoord.x), \(imgPointCoord.y)) -> (\(lat)), \(lon)")
         return CLLocation(latitude: lat, longitude: lon)
@@ -888,7 +942,7 @@ class TourViewController: UIViewController {
         let lon = String(format: "%.6f", coord.coordinate.longitude)
         let accuracy = String(format: "%.1f", coord.horizontalAccuracy/0.3048)
 
-        lblGpsCoord.text = "(\(lat), \(lon)) [~\(accuracy)]"
+        lblGpsCoord.text = "(\(lat), \(lon)) [~\(accuracy), \(headingRad*180/Double.pi)]"
     }
 
     /* =========================================================================
@@ -929,26 +983,44 @@ class TourViewController: UIViewController {
      image size as a CGSize.
      ======================================================================== */
     func getImagePointSizeInImageView(imageView:UIImageView) -> CGSize {
+
+        //the logic here assuems the cmapus image is square (aspect ratio = 1.0)
+        let imageFrameSize = viewTour.frame.size
+        if imageFrameSize.width > imageFrameSize.height {
+            //in this case, the height is clipped
+            return CGSize(width: imageFrameSize.width, height: imageFrameSize.width)
+        }
+        else {
+            //in this csse, the width is clipped
+            return CGSize(width: imageFrameSize.height, height: imageFrameSize.height)
+        }
+
+        /*
         let imagePixelSize = imageView.image!.size
-        let imageFrameSize = imageView.frame.size
+        //let imageFrameSize = imageView.frame.size
+        let imageFrameSize = viewTour.frame.size
         let imageAR = imagePixelSize.width/imagePixelSize.height
         let imageFrameAR = imageView.frame.width/imageView.frame.height
+        
+        //print("$$$$ imagePixelSize=\(imagePixelSize), imageFrameSize=\(imageFrameSize), imageAR=\(imageAR), imageFrameAR=\(imageFrameAR)")
+        print("$$$$ imageFrameSize=\(imageFrameSize)")
         
         var imagePointSize = CGSize()
         //determine the location of the image relative to its super view
         if imageFrameAR < imageAR {
-            //print("limited by height")
+            //print("limited by width, aspect fill will fill the height (width clipped)")
             imagePointSize.height = imageFrameSize.height
             imagePointSize.width = imagePointSize.height*imagePixelSize.width/imagePixelSize.height
             //print(imagePointSize)
         }
         else {
-            //print("limited by width")
+            //print("limited by height, aspect fill will fill the width (height clipped)")
             imagePointSize.width = imageFrameSize.width
             imagePointSize.height = imagePointSize.width*imagePixelSize.height/imagePixelSize.width
             //print(imagePointSize)
         }
         return imagePointSize
+         */
     }
     
     
@@ -1122,6 +1194,41 @@ class TourViewController: UIViewController {
         //return an empty NSAttributedString object if we fail to load the default RTF
         return NSAttributedString()
     }
+    
+    
+    /* =========================================================================
+     This function performs a 2D coordinate transformation of the coordinates
+     (x, y) of the supplied CCPoint through an angle T using the following
+     matrix algebra:
+            |x′| = |cos T   -sin T| |x|
+            |y′|   |sin T    cos T| |y|
+     The transformed point (x', y') is returned in a new CGPoint
+     ======================================================================== */
+    func rotateCoord(point:CGPoint, aboutPoint:CGPoint, byThisManyRads thetaRad:Double) -> CGPoint {
+        //get the center or rotation
+        let x0 = Double(aboutPoint.x)
+        let y0 = Double(aboutPoint.y)
+        
+        //get the coordinate relative to the center
+        let x = Double(point.x) - x0
+        let y = Double(point.y) - y0
+        
+        //perform the rotation
+        let c = cos(thetaRad)
+        let s = sin(thetaRad)
+        let xp = c * x - s * y + x0
+        let yp = s * x + c * y + y0
+        
+        //return the rotated coordinate
+        return CGPoint(x: xp, y: yp)
+    }
+
+    /* =========================================================================
+     ======================================================================== */
+    func rotateCoord(point:CGPoint, aboutPoint:CGPoint, byThisManyDegs thetaDeg:Double) -> CGPoint {
+        return rotateCoord(point:point, aboutPoint:aboutPoint, byThisManyRads:thetaDeg*Double.pi/180.0)
+    }
+
     
     /* =========================================================================
      ======================================================================== */
