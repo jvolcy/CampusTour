@@ -128,7 +128,6 @@ class TourViewController: UIViewController {
         //set the default tour mode
         setTourMode(.walk)
         
-        vStackJoyStick.isHidden = true
         lblGpsCoord.isHighlighted = true
         
         if SCCT_DebugMode == true {
@@ -145,7 +144,8 @@ class TourViewController: UIViewController {
             vStackJoyStick.isHidden = true
         }
         
-        
+        vStackJoyStick.isHidden = false     //TEMP *******
+
         print("campus image size = (\(CAMPUS_IMG_SIZE_X), \(CAMPUS_IMG_SIZE_Y))")
         
         //pre-load the default RTF
@@ -309,18 +309,24 @@ class TourViewController: UIViewController {
         if recognizer.state == .ended {
             //the location in the image target frame is returned by handleImgBuildingsTap
             let locationInTargetImgFrame = recognizer.location(in: imgBuildings /*recognizer.view*/)
-            
+
+            //print("recognizer.location(in: imgBuildings) = \(recognizer.location(in: imgBuildings))")
+
             //now we need the offset of the image in the frame
             let targetImgOrigin = getImageOffsetInImageView(imageView: imgBuildings /*recognizer.view as! UIImageView*/)
             
             let locationInTargetImg = CGPoint(x: locationInTargetImgFrame.x - targetImgOrigin.x, y:locationInTargetImgFrame.y - targetImgOrigin.y)
             
+            print("location in campus image = \(locationInTargetImg)")
+
             let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
+            //let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImgFrame)
+
+            //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
             latestGpsLocation =  coord
             setMarker(coord: coord)
             
             processNewLocation(coord: coord)
-            //print("## (\(coord.coordinate.latitude), \(coord.coordinate.longitude))")
         }
     }
 
@@ -930,7 +936,7 @@ class TourViewController: UIViewController {
         
         var imagePointSize = CGSize()
         //determine the location of the image relative to its super view
-        if imageFrameAR > imageAR {
+        if imageFrameAR < imageAR {
             //print("limited by height")
             imagePointSize.height = imageFrameSize.height
             imagePointSize.width = imagePointSize.height*imagePixelSize.width/imagePixelSize.height

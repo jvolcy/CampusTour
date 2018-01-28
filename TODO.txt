@@ -36,3 +36,7 @@ https://developer.apple.com/documentation/corelocation/getting_heading_and_cours
 
 Core Motion
 https://developer.apple.com/documentation/coremotion
+
+****************************
+The function getImageOffsetInImageView() probably needs work
+
