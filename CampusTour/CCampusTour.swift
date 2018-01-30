@@ -67,7 +67,7 @@ class CCampusTour : NSObject {
      notificaiton argument is a gps_coord object.
      ======================================================================== */
     @objc func gotNewLocationFromLocationServices(_ notification: Notification){
-        let coord:CLLocation = notification.object as! CLLocation
+        //let coord:CLLocation = notification.object as! CLLocation
         //print("got new location! (\(coord.coordinate.latitude), \(coord.coordinate.longitude)")
 
     }

@@ -12,6 +12,8 @@ import CoreLocation
 
 class TourViewController: UIViewController {
     
+    //global Latest GPS coordinates
+    var latestGpsLocation = CLLocation()
 
     @IBOutlet weak var txtTourInfo: UITextView! //main tour information attributed text display
     @IBOutlet weak var btnMapMediaStop: UIButton!
@@ -115,7 +117,9 @@ class TourViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        //set the campus and default buildings images
         campusImage = UIImage(named: "campus_map")
+        imgBuildings.image = UIImage(named:"NONE")
         
         CAMPUS_IMG_SIZE_X = Int(campusImage.size.width)
         CAMPUS_IMG_SIZE_Y = Int(campusImage.size.height)
@@ -206,8 +210,6 @@ class TourViewController: UIViewController {
                                                selector: #selector(gotNewHeadingFromLocationServices(_:)),
                                                name: locationServicesUpdatedHeading,
                                                object: nil);
-
-        
     }
     
     /* =========================================================================
@@ -330,11 +332,7 @@ class TourViewController: UIViewController {
         }
         
         return locationInViewTour
-        
     }
-    /* =========================================================================
-     ======================================================================== */
-    
     
     /* =========================================================================
      This function transforms x-y coordinates from the viewTour frame
@@ -374,9 +372,7 @@ class TourViewController: UIViewController {
         }
         
         return locationInTargetImg
-
     }
-
     
     /* =========================================================================
      This is the viewTour gesture recognizer for the viewTour view.
@@ -397,16 +393,16 @@ class TourViewController: UIViewController {
             // we need the location in the image coordinate, not the frame.
             let locationInTargetImg = viewTourToImgTourXform(viewPoint: locationInTargetImgFrame)
             
-            let coord = pointsToGpsCoord(imgPointCoord: locationInTargetImg)
+            let coord = pointToGpsCoord(imgPointCoord: locationInTargetImg)
 
             //print("## \(locationInTargetImgFrame) -> \(locationInTargetImg) -> \(coord.coordinate.latitude), \(coord.coordinate.longitude)")
             latestGpsLocation =  coord
-            setMarker(coord: coord)
+            //setMarker(coord: coord)
             
             processNewLocation(coord: coord)
         }   //if recognizer.state == .ended
     }
-
+    
     /* =========================================================================
      CLLocationManagerDelegate:didUpdateHeading delegate
      ======================================================================== */
@@ -420,9 +416,9 @@ class TourViewController: UIViewController {
             //campusImage.
             imgTourImage.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
             imgBuildings.transform = CGAffineTransform(rotationAngle:CGFloat(headingRad))
+            setMarker(coord: latestGpsLocation)
         }
     }
-
 
     /* =========================================================================
      newly updated GPS coordinate notifications callback function.  The
@@ -433,7 +429,7 @@ class TourViewController: UIViewController {
         //ignore newly reported locations if GPS mode is off
         if gpsOn == false {return}
 
-        //let coord = notification.object as! CLLocation
+        latestGpsLocation = notification.object as! CLLocation
 
         //****** this minimum update time should be a parameter or eventually eliminated
         if Date.timeIntervalSinceReferenceDate - gpsLastUpdateTime < 0.25 {
@@ -493,7 +489,6 @@ class TourViewController: UIViewController {
     /* =========================================================================
      ======================================================================== */
     func processNewLocation(coord:CLLocation) {
-        setMarker(coord: coord)
         
         //let poisInRange = campusTour?.poiManager.getPoisInRange(coord: coord)
         //print("#poisInRange = \(poisInRange?.count)")
@@ -553,8 +548,8 @@ class TourViewController: UIViewController {
 
         }
         
+        setMarker(coord: coord)
         setMediaButtons()
-
     }
     
     /* =========================================================================
@@ -749,20 +744,20 @@ class TourViewController: UIViewController {
             /* gray media buttons when we are not in range of a POI.  Otherwise
             enable all media buttons. */
             //check to see if there are POIs in range
-            if let nearestPoi = campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation) {
+            if (campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation)) != nil {
                 //---------- GPS is off and there is a POI in range ----------
                 btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
                 btnPlayPause.isEnabled = true
                 btnRewind.isEnabled = true
                 //btnRePlay.isEnabled = true
-            }
+            }   //if (campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation)) != nil
             else {
                 //---------- GPS is off and there are no POIs in range ----------
                 btnPlayPause.setImage(UIImage(named: "play"), for: .normal)
                 btnPlayPause.isEnabled = false
                 btnRewind.isEnabled = false
                 //btnRePlay.isEnabled = false
-            }   //else for if let nearestPoi
+            }   //else for if (campusTour?.poiManager.getNearestPoiInRange(coord: latestGpsLocation)) != nil
         }   //else for if gpsOn == true
 
     }   //func setMediaButtons()
@@ -787,7 +782,7 @@ class TourViewController: UIViewController {
         }
         else {
             // no UIView was supplied; assume this is audio.  We do not need the returned UIView value
-            AVStreamer.playMedia(url:url, showPlaybackControls:false)
+            _ = AVStreamer.playMedia(url:url, showPlaybackControls:false)
             mediaState = .playing
         }
     }
@@ -916,7 +911,7 @@ class TourViewController: UIViewController {
      This function converts image point coordinates to gps coordinates
      for the image in imgTourImage
      ======================================================================== */
-    func pointsToGpsCoord(imgPointCoord:CGPoint) -> CLLocation {
+    func pointToGpsCoord(imgPointCoord:CGPoint) -> CLLocation {
         //get the top, bottom, left and right pixel coordinates of the image
         let imagePointSize = getImagePointSizeInImageView(imageView: imgTourImage)
         let imageLeft = 0.0
@@ -943,23 +938,31 @@ class TourViewController: UIViewController {
         
         //set the marker based on the accuracy of the GPS signal
         //*** These limits should be set in the config file. ***
-        let accuracyInFeet = coord.horizontalAccuracy/0.3048
-        switch accuracyInFeet
-        {
-        case 0..<25:
+        
+        /* if gps is on, set the marker based on the accuracy.
+         Otherwise, use the marker for maximum accuracy. */
+        if gpsOn == true {
+            let accuracyInFeet = coord.horizontalAccuracy/0.3048
+            switch accuracyInFeet
+            {
+            case 0..<25:
+                imgMarker.image = UIImage(named: "marker1")
+            case 25..<50:
+                imgMarker.image = UIImage(named: "marker2")
+            case 50..<100:
+                imgMarker.image = UIImage(named: "marker3")
+            case 100..<200:
+                imgMarker.image = UIImage(named: "marker4")
+            default:
+                imgMarker.image = nil
+            }
+        }
+        else {  //gps is off, use marker1
             imgMarker.image = UIImage(named: "marker1")
-        case 25..<50:
-            imgMarker.image = UIImage(named: "marker2")
-        case 50..<100:
-            imgMarker.image = UIImage(named: "marker3")
-        case 100..<200:
-            imgMarker.image = UIImage(named: "marker4")
-        default:
-            imgMarker.image = nil
         }
         
         //draw the marker
-        setMarkerOnImageView(marker:imgMarker, targetView: imgTourImage, targetLocation: gpsCoordToPoints(coord: coord))
+        setMarkerOnImageView(marker:imgMarker, targetLocation: gpsCoordToPoints(coord: coord))
         
         //update the label
         let lat = String(format: "%.6f", coord.coordinate.latitude)
@@ -973,22 +976,17 @@ class TourViewController: UIViewController {
      This function attempts to superimpose the supplied UIView object
      (the marker) centered on the target UIImageView based on the UIImageView's
      image coordinates.
-     The function is intended to work on images that are "aspect fitted" in
-     their frame.  In other words, the entire aspect-preserced image must
-     be displayed for the coordinate transforms to work properly.
-     "aspect-fitted" images often have blank border on the left and right or
-     on top and bottom, depending on which dimension limits the size of the
-     image in its frame.  This function handles both cases and draws
-     the marker centered at the correct coordinates in the image.
      ======================================================================== */
-    func setMarkerOnImageView(marker:UIView, targetView:UIImageView, targetLocation:CGPoint){
+    func setMarkerOnImageView(marker:UIView, targetLocation:CGPoint){
+
+        //translate the coordinates from the image to the view
+        let targetLocationInFrameCoord = imgTourToViewTourXform(imgPoint: targetLocation)
         
-        let rotated_loc = rotateCoord(point: targetLocation, aboutPoint: CGPoint(x:viewTour.frame.midX, y:viewTour.frame.midY), byThisManyRads: headingRad)
+        //rotate the image about the the center of the view
+        let rotated_loc = rotateCoord(point: targetLocationInFrameCoord, aboutPoint: CGPoint(x:viewTour.bounds.midX, y:viewTour.bounds.midY), byThisManyRads: headingRad)
         
-        let targetLocationInFrameCoord = imgTourToViewTourXform(imgPoint: rotated_loc)
-        
-        //draw the marker at the offset position
-        marker.center = CGPoint(x:targetLocationInFrameCoord.x,  y:targetLocationInFrameCoord.y)
+         //center the marker at the rotated position
+         marker.center = CGPoint(x:rotated_loc.x,  y:rotated_loc.y)        
     }
     
     

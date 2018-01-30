@@ -13,7 +13,7 @@ import CoreLocation
 var campusTour:CCampusTour? = nil
 
 //global Latest GPS coordinates
-var latestGpsLocation = CLLocation()
+//var latestGpsLocation = CLLocation()
 
 //config file
 let CtConfigFileUrl = "https://raw.githubusercontent.com/jvolcy/SCCampusTour/master/ct_config.json"
